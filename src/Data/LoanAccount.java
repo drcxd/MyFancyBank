@@ -34,9 +34,6 @@ public class LoanAccount extends Account {
     }
 
     @Override
-    public boolean payInterest() { return true; }
-
-    @Override
     public boolean destroy(Msg err) {
         if (!isClear()) {
             err.msg = "You should pay the loan before you destroy it!";
