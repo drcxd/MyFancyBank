@@ -6,30 +6,71 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 import Data.User;
+import Data.Money;
 
 public class ManagerPanel extends BankPanel {
+
+    MoneyInputer transFeeInputer;
+
+    MoneyInputer highBalanceInputer;
+
+    JTextField txtLoanInterest = new JTextField(10);
+
     JPanel userPanel = new JPanel();
+
     public ManagerPanel(final DlgBank dlgBank) {
         super(dlgBank);
+
+        transFeeInputer = new MoneyInputer(dlgBank);
+        highBalanceInputer = new  MoneyInputer(dlgBank);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel ctrlPanel = new JPanel();
+        ctrlPanel.setLayout(new BoxLayout(ctrlPanel, BoxLayout.Y_AXIS));
+
+        JPanel btnPanel = new JPanel();
         JButton btnPayInterest = new JButton("Pay Interest");
         btnPayInterest.addActionListener(new PayInterestListener());
-        ctrlPanel.add(btnPayInterest);
+        btnPanel.add(btnPayInterest);
 
         JButton btnLogAll = new JButton("Log All");
         btnLogAll.addActionListener(new LogAllListener());
-        ctrlPanel.add(btnLogAll);
+        btnPanel.add(btnLogAll);
 
         JButton btnLogUpdate = new JButton("Log Update");
         btnLogUpdate.addActionListener(new LogUpdateListener());
-        ctrlPanel.add(btnLogUpdate);
+        btnPanel.add(btnLogUpdate);
 
         JButton btnLogout = new JButton("Logout");
         btnLogout.addActionListener(new LogoutListener());
-        ctrlPanel.add(btnLogout);
+        btnPanel.add(btnLogout);
+        ctrlPanel.add(btnPanel);
+
+        JPanel transFeePanel = new JPanel();
+        transFeePanel.add(new JLabel("Set Transaction Fee"));
+        transFeePanel.add(transFeeInputer);
+        JButton btnSetTransFee = new JButton("Confirm");
+        btnSetTransFee.addActionListener(new setTransFeeListener());
+        transFeePanel.add(btnSetTransFee);
+        ctrlPanel.add(transFeePanel);
+
+        JPanel highBalancePanel = new JPanel();
+        highBalancePanel.add(new JLabel("Set High Balance"));
+        highBalancePanel.add(highBalanceInputer);
+        JButton btnSetHighBalance = new JButton("Confirm");
+        btnSetHighBalance.addActionListener(new setHighBalanceListener());
+        highBalancePanel.add(btnSetHighBalance);
+        ctrlPanel.add(highBalancePanel);
+
+        JPanel loanInterestPanel = new JPanel();
+        loanInterestPanel.add(new JLabel("Set Loan Interest"));
+        loanInterestPanel.add(txtLoanInterest);
+        JButton btnSetLoanInterest = new JButton("Confirm");
+        btnSetLoanInterest.addActionListener(new setLoanInterestListener());
+        loanInterestPanel.add(btnSetLoanInterest);
+        ctrlPanel.add(loanInterestPanel);
+
         add(ctrlPanel);
 
         add(new JLabel("User List"));
@@ -77,6 +118,50 @@ public class ManagerPanel extends BankPanel {
     private class LogoutListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             dlgBank.switchWelcomePanel();
+        }
+    }
+
+    private class setTransFeeListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            double amount = transFeeInputer.getAmount();
+            if (amount < 0) {
+                new MessageWindow("You would like to input a number larger than 0!", dlgBank);
+                return;
+            }
+            Money.Currency currency = transFeeInputer.getCurrency();
+            dlgBank.setTransFee(new Money(currency, amount));
+            new MessageWindow("Set Transaction Fee Succeeded!", dlgBank);
+        }
+    }
+
+    private class setHighBalanceListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            double amount = highBalanceInputer.getAmount();
+            if (amount < 0) {
+                new MessageWindow("You would like to input a number larger than 0!", dlgBank);
+                return;
+            }
+            Money.Currency currency = highBalanceInputer.getCurrency();
+            dlgBank.setHighBalance(new Money(currency, amount));
+            new MessageWindow("Set High Balance Succeeded!", dlgBank);
+        }
+    }
+
+    private class setLoanInterestListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            double interestRate = 0;
+            try {
+                interestRate = Double.parseDouble(txtLoanInterest.getText());
+            }
+            catch (Throwable ex) {
+                System.out.println("Error " + ex.getMessage());
+                ex.printStackTrace();
+            }
+            if (interestRate < 1) {
+                new MessageWindow("You would like to input a number larger than 1!", dlgBank);
+            }
+            dlgBank.setLoanInterest(interestRate);
+            new MessageWindow("Set Loan Interest Succeeded!", dlgBank);
         }
     }
 }

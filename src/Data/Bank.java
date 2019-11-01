@@ -11,7 +11,7 @@ public class Bank {
 
     public static final Money WITHDRAW_FEE = new Money(Money.Currency.USD, 1);
 
-    public static final Money TRANSANCT_FEE = new Money(Money.Currency.USD, 1);
+    public static Money TRANSANCT_FEE = new Money(Money.Currency.USD, 1);
 
     public static final Money DESTROY_ACCOUNT_FEE = new Money(Money.Currency.USD, 5);
 
@@ -20,6 +20,8 @@ public class Bank {
     public static final double LOAN_RATE = 1.05;
 
     public static final int LOAN_COLLATERAL_MULTIPLIER = 5;
+
+    public static Money HIGH_BALANCE = new Money(Money.Currency.USD, 100);
 
     private HashMap<String, User> name2User = new HashMap<String, User>();
 
@@ -184,5 +186,21 @@ public class Bank {
     public void collectFee(Money fee) {
         bankerAccount.save(fee);
         Log.globalLogCollectFee(fee);
+    }
+
+    public void setTransFee(Money newTransFee) {
+        TRANSANCT_FEE = newTransFee;
+    }
+
+    public void setHighBalance(Money highBalance) {
+        HIGH_BALANCE = highBalance;
+    }
+
+    public void setLoanInterest(double interestRate) {
+        for (Entry<Integer, Account> it : id2Account.entrySet()) {
+            if (it.getValue() instanceof LoanAccount) {
+                it.getValue().setInterestRate(interestRate);
+            }
+        }
     }
 }

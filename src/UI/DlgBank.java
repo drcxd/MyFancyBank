@@ -102,6 +102,18 @@ public class DlgBank extends JFrame {
         return bank.getUserAccountInfo(name);
     }
 
+    public void setTransFee(Money newTransFee) {
+        bank.setTransFee(newTransFee);
+    }
+
+    public void setHighBalance(Money highBalance) {
+        bank.setHighBalance(highBalance);
+    }
+
+    public void setLoanInterest(double interestRate) {
+        bank.setLoanInterest(interestRate);
+    }
+
     public void switchUserLoginPanel() {
         getContentPane().removeAll();
         add(userLoginPanel);

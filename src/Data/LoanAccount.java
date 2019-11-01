@@ -43,6 +43,12 @@ public class LoanAccount extends Account {
         return true;
     }
 
+    @Override
+    public boolean payInterest() {
+        deposit.payInterest(interestRate);
+        return true;
+    }
+
     public boolean isClear() {
         boolean clear = true;
         for (Money.Currency c : Money.Currency.values()) {

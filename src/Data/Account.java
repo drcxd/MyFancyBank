@@ -63,8 +63,11 @@ abstract public class Account {
     public boolean transact(Money money, Account account, Msg err) { return false; }
 
     public boolean payInterest() {
-        deposit.payInterest(interestRate);
-        return true;
+        if (getAccountTotalMoney(Money.Currency.USD).moreThan(Bank.HIGH_BALANCE)) {
+            deposit.payInterest(interestRate);
+            return true;
+        }
+        return false;
     }
 
     public boolean destroy(Msg err) {
@@ -86,5 +89,9 @@ abstract public class Account {
                                Integer.toString(id),
                                Double.toString(interestRate),
                                deposit.getDepositInfo());
+    }
+
+    public void setInterestRate(double interestRate) {
+        this.interestRate = interestRate;
     }
 }
