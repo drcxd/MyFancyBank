@@ -114,6 +114,10 @@ public class DlgBank extends JFrame {
         bank.setLoanInterest(interestRate);
     }
 
+    public void setShareThreshold(Money threshold) {
+        bank.setShareThreshold(threshold);
+    }
+
     public void switchUserLoginPanel() {
         getContentPane().removeAll();
         add(userLoginPanel);

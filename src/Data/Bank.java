@@ -23,6 +23,8 @@ public class Bank {
 
     public static Money HIGH_BALANCE = new Money(Money.Currency.USD, 100);
 
+    public static Money SHARE_ACCOUNT_THRESHOLD = new Money(Money.Currency.USD, 100);
+
     private HashMap<String, User> name2User = new HashMap<String, User>();
 
     private HashMap<Integer, Account> id2Account = new HashMap<Integer, Account>();
@@ -202,5 +204,9 @@ public class Bank {
                 it.getValue().setInterestRate(interestRate);
             }
         }
+    }
+
+    public void setShareThreshold(Money threshold) {
+        SHARE_ACCOUNT_THRESHOLD = threshold;
     }
 }

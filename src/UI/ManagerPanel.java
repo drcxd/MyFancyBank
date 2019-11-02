@@ -14,6 +14,8 @@ public class ManagerPanel extends BankPanel {
 
     MoneyInputer highBalanceInputer;
 
+    MoneyInputer shareThresholdInputer;
+
     JTextField txtLoanInterest = new JTextField(10);
 
     JPanel userPanel = new JPanel();
@@ -62,6 +64,14 @@ public class ManagerPanel extends BankPanel {
         btnSetHighBalance.addActionListener(new setHighBalanceListener());
         highBalancePanel.add(btnSetHighBalance);
         ctrlPanel.add(highBalancePanel);
+
+        JPanel shareThresholdPanel = new JPanel();
+        shareThresholdPanel.add(new JLabel("Set Share Account Threshold"));
+        shareThresholdPanel.add(shareThresholdInputer);
+        JButton btnSetShareThreshold = new JButton("Confirm");
+        btnSetShareThreshold.addActionListener(new setShareThresholdListener());
+        shareThresholdPanel.add(btnSetShareThreshold);
+        ctrlPanel.add(shareThresholdPanel);
 
         JPanel loanInterestPanel = new JPanel();
         loanInterestPanel.add(new JLabel("Set Loan Interest"));
@@ -162,6 +172,19 @@ public class ManagerPanel extends BankPanel {
             }
             dlgBank.setLoanInterest(interestRate);
             new MessageWindow("Set Loan Interest Succeeded!", dlgBank);
+        }
+    }
+
+    private class setShareThresholdListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            double amount = shareThresholdInputer.getAmount();
+            if (amount < 0) {
+                new MessageWindow("You would like to input a number larger than 0!", dlgBank);
+                return;
+            }
+            Money.Currency currency = shareThresholdInputer.getCurrency();
+            dlgBank.setShareThreshold(new Money(currency, amount));
+            new MessageWindow("Set Share Account Threshold Succeeded!", dlgBank);
         }
     }
 }
