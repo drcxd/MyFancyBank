@@ -35,7 +35,7 @@ public class User {
     public Money getUserTotalMoneyInCurrency(Money.Currency currency) {
         Money total = new Money(currency, 0);
         for (Account account : accounts) {
-            total.add(account.getAccountTotalMoney(currency));
+            total.add(account.getNetWorth(currency));
         }
         return total;
     }

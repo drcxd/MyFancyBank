@@ -63,7 +63,7 @@ abstract public class Account {
     public boolean transact(Money money, Account account, Msg err) { return false; }
 
     public boolean payInterest() {
-        if (getAccountTotalMoney(Money.Currency.USD).moreThan(Bank.HIGH_BALANCE)) {
+        if (getNetWorth(Money.Currency.USD).moreThan(Bank.HIGH_BALANCE)) {
             deposit.payInterest(interestRate);
             return true;
         }
@@ -74,7 +74,7 @@ abstract public class Account {
         return deposit.destroy(Bank.DESTROY_ACCOUNT_FEE, err);
     }
 
-    public Money getAccountTotalMoney(Money.Currency currency) {
+    public Money getNetWorth(Money.Currency currency) {
         Money total = new Money(currency, 0);
         for (Money.Currency c : Money.Currency.values()) {
             if (deposit.query(c) != null) {
