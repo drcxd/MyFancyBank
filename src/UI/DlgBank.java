@@ -118,6 +118,10 @@ public class DlgBank extends JFrame {
         bank.setShareThreshold(threshold);
     }
 
+    public boolean tryCreateNewStock(int id, String name, Msg err) {
+        return bank.tryCreateNewStock(id, name, err);
+    }
+
     public void switchUserLoginPanel() {
         getContentPane().removeAll();
         add(userLoginPanel);
@@ -145,7 +149,7 @@ public class DlgBank extends JFrame {
 
     public void switchManagerPanel() {
         getContentPane().removeAll();
-        managerPanel.update(bank.getUserInfo());
+        managerPanel.update(bank.getUserInfo(), bank.getStockInfo());
         add(managerPanel);
         SwingUtilities.updateComponentTreeUI(this);
     }

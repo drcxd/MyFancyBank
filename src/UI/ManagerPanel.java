@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import Data.User;
 import Data.Money;
+import Data.Msg;
+import Data.Stock;
 
 public class ManagerPanel extends BankPanel {
 
@@ -18,7 +20,13 @@ public class ManagerPanel extends BankPanel {
 
     JTextField txtLoanInterest = new JTextField(10);
 
+    JTextField txtStockID = new JTextField(10);
+
+    JTextField txtStockName = new JTextField(10);
+
     JPanel userPanel = new JPanel();
+
+    JPanel stockPanel = new JPanel();
 
     public ManagerPanel(final DlgBank dlgBank) {
         super(dlgBank);
@@ -50,11 +58,12 @@ public class ManagerPanel extends BankPanel {
         btnPanel.add(btnLogout);
         ctrlPanel.add(btnPanel);
 
+
         JPanel transFeePanel = new JPanel();
         transFeePanel.add(new JLabel("Set Transaction Fee"));
         transFeePanel.add(transFeeInputer);
         JButton btnSetTransFee = new JButton("Confirm");
-        btnSetTransFee.addActionListener(new setTransFeeListener());
+        btnSetTransFee.addActionListener(new SetTransFeeListener());
         transFeePanel.add(btnSetTransFee);
         ctrlPanel.add(transFeePanel);
 
@@ -62,7 +71,7 @@ public class ManagerPanel extends BankPanel {
         highBalancePanel.add(new JLabel("Set High Balance"));
         highBalancePanel.add(highBalanceInputer);
         JButton btnSetHighBalance = new JButton("Confirm");
-        btnSetHighBalance.addActionListener(new setHighBalanceListener());
+        btnSetHighBalance.addActionListener(new SetHighBalanceListener());
         highBalancePanel.add(btnSetHighBalance);
         ctrlPanel.add(highBalancePanel);
 
@@ -70,7 +79,7 @@ public class ManagerPanel extends BankPanel {
         shareThresholdPanel.add(new JLabel("Set Share Account Threshold"));
         shareThresholdPanel.add(shareThresholdInputer);
         JButton btnSetShareThreshold = new JButton("Confirm");
-        btnSetShareThreshold.addActionListener(new setShareThresholdListener());
+        btnSetShareThreshold.addActionListener(new SetShareThresholdListener());
         shareThresholdPanel.add(btnSetShareThreshold);
         ctrlPanel.add(shareThresholdPanel);
 
@@ -78,26 +87,47 @@ public class ManagerPanel extends BankPanel {
         loanInterestPanel.add(new JLabel("Set Loan Interest"));
         loanInterestPanel.add(txtLoanInterest);
         JButton btnSetLoanInterest = new JButton("Confirm");
-        btnSetLoanInterest.addActionListener(new setLoanInterestListener());
+        btnSetLoanInterest.addActionListener(new SetLoanInterestListener());
         loanInterestPanel.add(btnSetLoanInterest);
         ctrlPanel.add(loanInterestPanel);
 
-        add(ctrlPanel);
+        JScrollPane scrlCtrlPanel = new JScrollPane(ctrlPanel);
+        add(scrlCtrlPanel);
 
         add(new JLabel("User List"));
-
         JScrollPane scrlUserList = new JScrollPane(userPanel);
         add(scrlUserList);
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
+
+        add(new JLabel("Create New Stock"));
+        JPanel stockCtrlPanel = new JPanel();
+        stockCtrlPanel.add(new JLabel("New Stock Name"));
+        stockCtrlPanel.add(txtStockName);
+        stockCtrlPanel.add(new JLabel("New Stock ID"));
+        stockCtrlPanel.add(txtStockID);
+        JButton btnCreateStock = new JButton("Create");
+        btnCreateStock.addActionListener(new CreateNewStockListener());
+        stockCtrlPanel.add(btnCreateStock);
+        add(stockCtrlPanel);
+
+        add(new JLabel("Stock List"));
+        JScrollPane scrlStockList = new JScrollPane(stockPanel);
+        add(scrlStockList);
+        stockPanel.setLayout(new BoxLayout(stockPanel, BoxLayout.Y_AXIS));
     }
 
-    public void update(ArrayList<User.UserInfo> userInfo) {
+    public void update(ArrayList<User.UserInfo> userInfo, ArrayList<Stock.StockInfo> stockInfo) {
         userPanel.removeAll();
         for (User.UserInfo it : userInfo) {
             JButton btnUser = new JButton(it.name);
             btnUser.setActionCommand(it.name);
             btnUser.addActionListener(new UserCheckListener());
             userPanel.add(btnUser);
+        }
+
+        stockPanel.removeAll();
+        for (Stock.StockInfo it : stockInfo) {
+            stockPanel.add(new StockInfoPanel(it));
         }
     }
 
@@ -132,7 +162,7 @@ public class ManagerPanel extends BankPanel {
         }
     }
 
-    private class setTransFeeListener implements ActionListener {
+    private class SetTransFeeListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             double amount = transFeeInputer.getAmount();
             if (amount < 0) {
@@ -145,7 +175,7 @@ public class ManagerPanel extends BankPanel {
         }
     }
 
-    private class setHighBalanceListener implements ActionListener {
+    private class SetHighBalanceListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             double amount = highBalanceInputer.getAmount();
             if (amount < 0) {
@@ -158,7 +188,7 @@ public class ManagerPanel extends BankPanel {
         }
     }
 
-    private class setLoanInterestListener implements ActionListener {
+    private class SetLoanInterestListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             double interestRate = 0;
             try {
@@ -176,7 +206,7 @@ public class ManagerPanel extends BankPanel {
         }
     }
 
-    private class setShareThresholdListener implements ActionListener {
+    private class SetShareThresholdListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             double amount = shareThresholdInputer.getAmount();
             if (amount < 0) {
@@ -186,6 +216,28 @@ public class ManagerPanel extends BankPanel {
             Money.Currency currency = shareThresholdInputer.getCurrency();
             dlgBank.setShareThreshold(new Money(currency, amount));
             new MessageWindow("Set Share Account Threshold Succeeded!", dlgBank);
+        }
+    }
+
+    private class CreateNewStockListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            String name = txtStockName.getText();
+            int id;
+            try {
+                id = Integer.parseInt(txtStockID.getText());
+                if (id < 0) {
+                    new MessageWindow("Please input an integer no less than zero.", dlgBank);
+                    return;
+                }
+            }
+            catch (Throwable e) {
+                new MessageWindow("Please input valid number!", dlgBank);
+                return;
+            }
+            Msg err = new Msg();
+            dlgBank.tryCreateNewStock(id, name, err);
+            new MessageWindow(err.msg, dlgBank);
+            dlgBank.switchManagerPanel();
         }
     }
 }

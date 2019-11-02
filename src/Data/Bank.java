@@ -3,6 +3,7 @@ package Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import UI.DlgBank;
 
@@ -25,11 +26,19 @@ public class Bank {
 
     public static Money SHARE_ACCOUNT_THRESHOLD = new Money(Money.Currency.USD, 100);
 
+    private static Random r = new Random();
+
+    public static final double MIN_STOCK_PRICE = 10.0;
+
+    public static final double MAX_STOCK_PRICE = 300.0;
+
     private HashMap<String, User> name2User = new HashMap<String, User>();
 
     private HashMap<Integer, Account> id2Account = new HashMap<Integer, Account>();
 
     private HashMap<Integer, MoneyAccount> id2MoneyAccount = new HashMap<Integer, MoneyAccount>();
+
+    private HashMap<Integer, Stock> id2Stock = new HashMap<Integer, Stock>();
 
     private DlgBank dlgBank;
 
@@ -226,5 +235,25 @@ public class Bank {
 
     public void setShareThreshold(Money threshold) {
         SHARE_ACCOUNT_THRESHOLD = threshold;
+    }
+
+    public boolean tryCreateNewStock(int id, String name, Msg err) {
+        Integer key = Integer.valueOf(id);
+        if (id2Stock.containsKey(key)) {
+            err.msg = "Duplicate stock ID!";
+            return false;
+        }
+        id2Stock.put(key, new Stock(id, name, new Money(Money.Currency.USD,
+                                                   MIN_STOCK_PRICE + r.nextDouble() * (MAX_STOCK_PRICE - MIN_STOCK_PRICE))));
+        err.msg = "New Stock Created!";
+        return true;
+    }
+
+    public ArrayList<Stock.StockInfo> getStockInfo() {
+        ArrayList<Stock.StockInfo> info = new ArrayList<Stock.StockInfo>();
+        for (Entry<Integer, Stock> it : id2Stock.entrySet()) {
+            info.add(it.getValue().getInfo());
+        }
+        return info;
     }
 }
