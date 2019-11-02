@@ -1,6 +1,6 @@
 package Data;
 
-public class LoanAccount extends Account {
+public class LoanAccount extends MoneyAccount {
 
     public LoanAccount(int id, Money money) {
         super(id);
@@ -22,7 +22,7 @@ public class LoanAccount extends Account {
     }
 
     @Override
-    public boolean transact(final Money money, final Account account, final Msg err) {
+    public boolean transact(Money money, MoneyAccount account, Msg err) {
         err.msg = "No transaction allowed for a loan account!";
         return false;
     }

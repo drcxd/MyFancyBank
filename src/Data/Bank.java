@@ -29,6 +29,8 @@ public class Bank {
 
     private HashMap<Integer, Account> id2Account = new HashMap<Integer, Account>();
 
+    private HashMap<Integer, MoneyAccount> id2MoneyAccount = new HashMap<Integer, MoneyAccount>();
+
     private DlgBank dlgBank;
 
     private int globalUserID = 10001;
@@ -37,7 +39,7 @@ public class Bank {
 
     private User activeUser;
 
-    public Account bankerAccount = new SavingAccount(10000);
+    public MoneyAccount bankerAccount = new SavingAccount(10000);
 
     public Bank() {
         dlgBank = new DlgBank(this);
@@ -78,24 +80,39 @@ public class Bank {
         return name2User.get(name).getUserAccountInfo();
     }
 
-    public boolean tryCreateAccount(Account.AccountType type, Money money, Msg err) {
+    private MoneyAccount tryCreateMoneyAccount(Account.AccountType type, Money money, Msg err) {
         if (type != Account.AccountType.Loan) {
             if (money.lessThan(CREATE_ACCOUNT_FEE)) {
                 err.msg = "You need to deposit at least " + CREATE_ACCOUNT_FEE.currency + " " + CREATE_ACCOUNT_FEE.amount + "!";
-                return false;
+                return null;
             }
             collectFee(CREATE_ACCOUNT_FEE);
         } else {
-            if (money.amount > activeUser.getUserTotalMoneyInCurrency(money.currency).amount * LOAN_COLLATERAL_MULTIPLIER) {
+            if (money.amount > activeUser.getUserNetWorthInCurrency(money.currency).amount * LOAN_COLLATERAL_MULTIPLIER) {
                 err.msg = "You need more deposit to take the loan!";
-                return false;
+                return null;
             }
         }
-        id2Account.put(globalAccountID, activeUser.createAccount(type, money, globalAccountID));
+        MoneyAccount account = activeUser.createMoneyAccount(type, money, globalAccountID);
+        id2MoneyAccount.put(globalAccountID, account);
         Log.globalLogCreateAccount(activeUser, globalAccountID, activeUser.getName(), type, money);
-        ++globalAccountID;
         err.msg = "Account Created!";
-        return true;
+        return account;
+    }
+
+    public boolean tryCreateAccount(Account.AccountType type, Money money, Msg err) {
+        Account account = null;
+        if (type != Account.AccountType.Stock) {
+            account = tryCreateMoneyAccount(type, money, err);
+        } else {
+            // tryCreateStockAccount(type, err);
+        }
+        if (account != null) {
+            id2Account.put(globalAccountID, account);
+            ++globalAccountID;
+            return true;
+        }
+        return false;
     }
 
     public boolean tryDestroyAccount(int accountID, Msg err) {
@@ -109,6 +126,7 @@ public class Bank {
             return false;
         }
         id2Account.remove(id);
+        id2MoneyAccount.remove(id);
         collectFee(DESTROY_ACCOUNT_FEE);
         Log.globalLogDestroyAccount(activeUser, globalAccountID, activeUser.getName());
         return true;
@@ -116,8 +134,8 @@ public class Bank {
 
     public void saveMoneyToAccount(final Money money, int accountID) {
         Integer id = Integer.valueOf(accountID);
-        if (id2Account.containsKey(id)) {
-            Account account = id2Account.get(id);
+        if (id2MoneyAccount.containsKey(id)) {
+            MoneyAccount account = id2MoneyAccount.get(id);
             account.save(money);
             Log.globalLogSave(activeUser, accountID, activeUser.getName(), money);
         }
@@ -125,8 +143,8 @@ public class Bank {
 
     public boolean withdrawMoneyFromAccount(final Money money, int accountID, Msg err) {
         Integer id = Integer.valueOf(accountID);
-        if (id2Account.containsKey(id)) {
-            Account account = id2Account.get(id);
+        if (id2MoneyAccount.containsKey(id)) {
+            MoneyAccount account = id2MoneyAccount.get(id);
             if (account.withdraw(money, err)) {
                 collectFee(WITHDRAW_FEE);
                 Log.globalLogWithdraw(activeUser, id, activeUser.getName(), money);
@@ -140,17 +158,17 @@ public class Bank {
 
     public boolean transactMoney(final Money money, int fromID, int toID, Msg err) {
         Integer fromAccntID = Integer.valueOf(fromID);
-        if (!id2Account.containsKey(fromAccntID)) {
+        if (!id2MoneyAccount.containsKey(fromAccntID)) {
             err.msg = "No account with this number could be transacted from!";
             return false;
         }
         Integer toAccntID = Integer.valueOf(toID);
-        if (!id2Account.containsKey(toAccntID)) {
+        if (!id2MoneyAccount.containsKey(toAccntID)) {
             err.msg = "No account with this number could be transacted to!";
             return false;
         }
-        Account fromAccount = id2Account.get(fromAccntID);
-        Account toAccount = id2Account.get(toAccntID);
+        MoneyAccount fromAccount = id2MoneyAccount.get(fromAccntID);
+        MoneyAccount toAccount = id2MoneyAccount.get(toAccntID);
         if (fromAccount.transact(money, toAccount, err)) {
             Log.globalLogTransact(activeUser, fromID, toID, activeUser.getName(), money);
             collectFee(TRANSANCT_FEE);
@@ -160,7 +178,7 @@ public class Bank {
     }
 
     public void payInterest() {
-        for (Entry<Integer, Account> it : id2Account.entrySet()) {
+        for (Entry<Integer, MoneyAccount> it : id2MoneyAccount.entrySet()) {
             it.getValue().payInterest();
         }
     }
@@ -199,7 +217,7 @@ public class Bank {
     }
 
     public void setLoanInterest(double interestRate) {
-        for (Entry<Integer, Account> it : id2Account.entrySet()) {
+        for (Entry<Integer, MoneyAccount> it : id2MoneyAccount.entrySet()) {
             if (it.getValue() instanceof LoanAccount) {
                 it.getValue().setInterestRate(interestRate);
             }

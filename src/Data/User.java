@@ -18,8 +18,8 @@ public class User {
 
     public String getName() { return name; }
 
-    public Account createAccount(Account.AccountType type, Money initialDeposit, int accountID) {
-        Account account = Account.createAccount(type, accountID, initialDeposit);
+    public MoneyAccount createMoneyAccount(Account.AccountType type, Money initialDeposit, int accountID) {
+        MoneyAccount account = MoneyAccount.createAccount(type, accountID, initialDeposit);
         accounts.add(account);
         return account;
     }
@@ -32,7 +32,7 @@ public class User {
         return true;
     }
 
-    public Money getUserTotalMoneyInCurrency(Money.Currency currency) {
+    public Money getUserNetWorthInCurrency(Money.Currency currency) {
         Money total = new Money(currency, 0);
         for (Account account : accounts) {
             total.add(account.getNetWorth(currency));

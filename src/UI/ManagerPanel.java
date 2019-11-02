@@ -24,7 +24,8 @@ public class ManagerPanel extends BankPanel {
         super(dlgBank);
 
         transFeeInputer = new MoneyInputer(dlgBank);
-        highBalanceInputer = new  MoneyInputer(dlgBank);
+        highBalanceInputer = new MoneyInputer(dlgBank);
+        shareThresholdInputer = new MoneyInputer(dlgBank);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 

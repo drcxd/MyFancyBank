@@ -11,6 +11,19 @@ public class AccountInfoPanel extends JPanel {
     public AccountInfoPanel(Account.AccountInfo info) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        info.reset();
+
+        String strID = info.getNextField();
+        String strType = info.getNextField();
+        String strInterestRate = info.getNextField();
+        int currencyTypeNum = Integer.parseInt(info.getNextField());
+        String[] types = new String[currencyTypeNum];
+        String[] amounts = new String[currencyTypeNum];
+        for (int i = 0; i < currencyTypeNum; ++i) {
+            types[i] = info.getNextField();
+            amounts[i] = info.getNextField();
+        }
+
         JPanel basicPanel = new JPanel();
         basicPanel.setLayout(new GridLayout(2, 3, 10, 5));
 
@@ -18,19 +31,19 @@ public class AccountInfoPanel extends JPanel {
         basicPanel.add(new JLabel("Account ID: "));
         basicPanel.add(new JLabel("Account Interest: "));
 
-        basicPanel.add(new JLabel(info.type));
-        basicPanel.add(new JLabel(info.id));
-        basicPanel.add(new JLabel(info.interestRate));
+        basicPanel.add(new JLabel(strType));
+        basicPanel.add(new JLabel(strID));
+        basicPanel.add(new JLabel(strInterestRate));
 
         add(basicPanel);
 
         JPanel moneyPanel = new JPanel();
-        moneyPanel.setLayout(new GridLayout(2, info.depositInfo.moneyInfo.size(), 10, 5));
-        for (Money.MoneyInfo it : info.depositInfo.moneyInfo) {
-            moneyPanel.add(new JLabel(it.type));
+        moneyPanel.setLayout(new GridLayout(2, currencyTypeNum, 10, 5));
+        for (String it : types) {
+            moneyPanel.add(new JLabel(it));
         }
-        for (Money.MoneyInfo it : info.depositInfo.moneyInfo) {
-            moneyPanel.add(new JLabel(it.amount));
+        for (String it : amounts) {
+            moneyPanel.add(new JLabel(it));
         }
         add(moneyPanel);
     }

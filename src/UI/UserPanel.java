@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+import Data.MoneyAccount;
 import Data.Account;
 import Data.Deposit;
 import Data.Money;
@@ -39,8 +40,12 @@ public class UserPanel extends BankPanel {
         lblUserName.setText("Hello, " + name);
         pnlAccounts.removeAll();
         for (Account.AccountInfo it : accountsInfo) {
-            AccountInfoItem item = new AccountInfoItem(dlgBank, it);
-            pnlAccounts.add(item);
+            if (it instanceof MoneyAccount.MoneyAccountInfo) {
+                MoneyAccountItem item = new MoneyAccountItem(dlgBank, it);
+                pnlAccounts.add(item);
+            } else {
+                //
+            }
         }
     }
 

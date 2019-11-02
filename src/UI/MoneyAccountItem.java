@@ -9,16 +9,19 @@ import Data.CheckingAccount;
 import Data.Deposit;
 import Data.Money;
 
-public class AccountInfoItem extends BankPanel {
+public class MoneyAccountItem extends BankPanel {
     int accountID;
     MoneyInputer saveInputer;
     MoneyInputer withdrawInputer;
     MoneyInputer transactInputer;
     JTextField txtAccountID = new JTextField(10);
-    public AccountInfoItem(DlgBank dlgBank, Account.AccountInfo info) {
+    public MoneyAccountItem(DlgBank dlgBank, Account.AccountInfo info) {
         super(dlgBank);
 
-        accountID = Integer.parseInt(info.id);
+        info.reset();
+        String strID = info.getNextField();
+        String strType = info.getNextField();
+        accountID = Integer.parseInt(strID);
 
         saveInputer = new MoneyInputer(dlgBank);
         withdrawInputer = new MoneyInputer(dlgBank);
@@ -41,7 +44,7 @@ public class AccountInfoItem extends BankPanel {
         withdrawPanel.add(btnWithdraw);
         add(withdrawPanel);
 
-        if (info.type.equals(CheckingAccount.class.getSimpleName())) {
+        if (strType.equals(CheckingAccount.class.getSimpleName())) {
             JPanel transactPanel = new JPanel();
             transactPanel.add(transactInputer);
             JButton btnTransact = new JButton("Transact");
