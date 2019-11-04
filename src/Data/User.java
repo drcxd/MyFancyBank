@@ -9,7 +9,7 @@ public class User {
 
     private int id;
 
-    private ArrayList<Account> accounts = new ArrayList<Account>();
+    private HashMap<Integer, Account> accounts = new HashMap<Integer, Account>();
 
     public User(String name, int id) {
         this.name = name;
@@ -18,32 +18,44 @@ public class User {
 
     public String getName() { return name; }
 
-    public Account createAccount(Account.AccountType type, Money initialDeposit, int accountID) {
-        Account account = Account.createAccount(type, accountID, initialDeposit);
-        accounts.add(account);
+    public MoneyAccount createMoneyAccount(Account.AccountType type, Money initialDeposit, int accountID) {
+        MoneyAccount account = MoneyAccount.createAccount(type, accountID, initialDeposit);
+        accounts.put(Integer.valueOf(accountID), account);
         return account;
     }
 
-    public boolean destroyAccount(Account account, Msg msg) {
+    public StockAccount createStockAccount(Account.AccountType type, int accountID) {
+        StockAccount account = StockAccount.createAccount(type, accountID);
+        accounts.put(Integer.valueOf(accountID), account);
+        return account;
+    }
+
+    public boolean destroyAccount(int accountID, Msg msg) {
+        Integer id = Integer.valueOf(accountID);
+        if (!accounts.containsKey(id)) {
+            msg.msg = "No such account!";
+            return false;
+        }
+        Account account = accounts.get(id);
         if (!account.destroy(msg)) {
             return false;
         }
-        accounts.remove(account);
+        accounts.remove(id);
         return true;
     }
 
-    public Money getUserTotalMoneyInCurrency(Money.Currency currency) {
+    public Money getUserNetWorthInCurrency(Money.Currency currency) {
         Money total = new Money(currency, 0);
-        for (Account account : accounts) {
-            total.add(account.getAccountTotalMoney(currency));
+        for (Entry<Integer, Account> it : accounts.entrySet()) {
+            total.add(it.getValue().getNetWorth(currency));
         }
         return total;
     }
 
     public ArrayList<Account.AccountInfo> getUserAccountInfo() {
         ArrayList<Account.AccountInfo> info = new ArrayList<Account.AccountInfo>();
-        for (Account account : accounts) {
-            info.add(account.getAccountInfo());
+        for (Entry<Integer, Account> it : accounts.entrySet()) {
+            info.add(it.getValue().getAccountInfo());
         }
         return info;
     }
@@ -52,6 +64,11 @@ public class User {
         UserInfo info = new UserInfo();
         info.name = new String(name);
         return info;
+    }
+
+    public boolean hasAuthOnAccount(int id) {
+        Integer key = Integer.valueOf(id);
+        return accounts.containsKey(key);
     }
 
     public class UserInfo {

@@ -21,7 +21,7 @@ public class MoneyInputer extends BankPanel {
     }
 
     public double getAmount() {
-        double amount = 0;
+        double amount = -1;
         try {
             amount = Double.parseDouble(txtAmount.getText());
         } catch (NumberFormatException ex) {

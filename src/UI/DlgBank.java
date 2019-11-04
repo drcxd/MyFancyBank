@@ -9,6 +9,7 @@ import Data.Bank;
 import Data.Money;
 import Data.Account;
 import Data.Msg;
+import Data.Stock;
 
 public class DlgBank extends JFrame {
     private final WelcomePanel welcomePanel = new WelcomePanel(this);
@@ -102,6 +103,41 @@ public class DlgBank extends JFrame {
         return bank.getUserAccountInfo(name);
     }
 
+    public void setTransFee(Money newTransFee) {
+        bank.setTransFee(newTransFee);
+    }
+
+    public void setHighBalance(Money highBalance) {
+        bank.setHighBalance(highBalance);
+    }
+
+    public void setLoanInterest(double interestRate) {
+        bank.setLoanInterest(interestRate);
+    }
+
+    public void setShareThreshold(Money threshold) {
+        bank.setShareThreshold(threshold);
+    }
+
+    public boolean tryCreateNewStock(int id, String name, Msg err) {
+        return bank.tryCreateNewStock(id, name, err);
+    }
+
+    public boolean tryRemoveStock(int id, Msg err) {
+        return bank.tryRemoveStock(id, err);
+    }
+
+    public boolean tryBuyStock(int accountID, int assoAccntID, int stockID, int stockNum, Msg err) {
+        return bank.tryBuyStock(accountID, assoAccntID, stockID, stockNum, err);
+    }
+
+    public boolean trySellStock(int accountID, int assoAccntID, int stockID, int stockNum, Msg err) {
+        return bank.trySellStock(accountID, assoAccntID, stockID, stockNum, err);
+    }
+
+    public ArrayList<Stock.StockInfo> getStockInfo() {
+        return bank.getStockInfo();
+    }
     public void switchUserLoginPanel() {
         getContentPane().removeAll();
         add(userLoginPanel);
@@ -129,7 +165,7 @@ public class DlgBank extends JFrame {
 
     public void switchManagerPanel() {
         getContentPane().removeAll();
-        managerPanel.update(bank.getUserInfo());
+        managerPanel.update(bank.getUserInfo(), bank.getStockInfo());
         add(managerPanel);
         SwingUtilities.updateComponentTreeUI(this);
     }

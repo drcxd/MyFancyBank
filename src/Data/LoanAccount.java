@@ -1,8 +1,8 @@
 package Data;
 
-public class LoanAccount extends Account {
+public class LoanAccount extends MoneyAccount {
 
-    public LoanAccount(int id, Money money) {
+    protected LoanAccount(int id, Money money) {
         super(id);
         money.amount *= -1;
         super.save(money);
@@ -22,19 +22,16 @@ public class LoanAccount extends Account {
     }
 
     @Override
-    public boolean transact(final Money money, final Account account, final Msg err) {
+    public boolean transact(Money money, MoneyAccount account, Msg err) {
         err.msg = "No transaction allowed for a loan account!";
         return false;
     }
 
     @Override
-    public boolean withdraw(final Money money, final Msg err) {
+    public boolean withdraw(Money money, Money fee, Msg err) {
         err.msg = "No withdrawl allowed for a loan account!";
         return false;
     }
-
-    @Override
-    public boolean payInterest() { return true; }
 
     @Override
     public boolean destroy(Msg err) {
@@ -43,6 +40,12 @@ public class LoanAccount extends Account {
             return false;
         }
         err.msg = "Destruction succeeded!";
+        return true;
+    }
+
+    @Override
+    public boolean payInterest() {
+        deposit.payInterest(interestRate);
         return true;
     }
 

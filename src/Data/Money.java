@@ -72,6 +72,11 @@ public class Money {
         return this;
     }
 
+    public Money mul(double f) {
+        this.amount *= f;
+        return this;
+    }
+
     public class MoneyInfo {
         public MoneyInfo(String type, String amount) {
             this.type = type;

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+import Data.MoneyAccount;
 import Data.Account;
 import Data.Deposit;
 import Data.Money;
@@ -33,14 +34,22 @@ public class UserPanel extends BankPanel {
         JButton btnLog = new JButton("Log");
         btnLog.addActionListener(new LogListener());
         add(btnLog);
+        JButton btnStockList = new JButton("Stock List");
+        btnStockList.addActionListener(new StockListListener());
+        add(btnStockList);
     }
 
     public void update(String name, ArrayList<Account.AccountInfo> accountsInfo) {
         lblUserName.setText("Hello, " + name);
         pnlAccounts.removeAll();
         for (Account.AccountInfo it : accountsInfo) {
-            AccountInfoItem item = new AccountInfoItem(dlgBank, it);
-            pnlAccounts.add(item);
+            if (it instanceof MoneyAccount.MoneyAccountInfo) {
+                MoneyAccountItem item = new MoneyAccountItem(dlgBank, it);
+                pnlAccounts.add(item);
+            } else {
+                StockAccountItem item = new StockAccountItem(dlgBank, it);
+                pnlAccounts.add(item);
+            }
         }
     }
 
@@ -59,6 +68,12 @@ public class UserPanel extends BankPanel {
     private class LogListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             dlgBank.showUserLog();
+        }
+    }
+
+    private class StockListListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            new DlgStockList(dlgBank.getStockInfo(), dlgBank);
         }
     }
 }
