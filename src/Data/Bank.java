@@ -53,11 +53,24 @@ public class Bank {
     public MoneyAccount bankerAccount = new SavingAccount(10000);
 
     public Bank() {
+
+        loadAllUser();
+
+        loadAllStock();
+
         dlgBank = new DlgBank(this);
     }
 
     public static void main(String[] args) {
         Bank bank = new Bank();
+    }
+
+    private void loadAllUser() {
+        // TODO
+    }
+
+    private void loadAllStock() {
+        // TODO
     }
 
     public boolean userExists(final String name) {
