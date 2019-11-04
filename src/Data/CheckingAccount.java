@@ -1,13 +1,13 @@
 package Data;
 
 public class CheckingAccount extends MoneyAccount {
-    public CheckingAccount(int id) {
+    protected CheckingAccount(int id) {
         super(id);
     }
 
     @Override
     public boolean transact(Money money, MoneyAccount account, Msg err) {
-        if (!deposit.takeOutMoney(money, err, Bank.TRANSANCT_FEE)) {
+        if (!deposit.takeOutMoney(money, Bank.TRANSANCT_FEE, err)) {
             err.msg = "You have no much money to transact!";
             return false;
         }

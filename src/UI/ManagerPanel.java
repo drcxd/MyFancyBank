@@ -127,7 +127,13 @@ public class ManagerPanel extends BankPanel {
 
         stockPanel.removeAll();
         for (Stock.StockInfo it : stockInfo) {
-            stockPanel.add(new StockInfoPanel(it));
+            JPanel p = new JPanel();
+            p.add(new StockInfoPanel(it));
+            JButton btnRemove = new JButton("Remove");
+            btnRemove.addActionListener(new RemoveStockListener());
+            btnRemove.setActionCommand(it.id);
+            p.add(btnRemove);
+            stockPanel.add(p);
         }
     }
 
@@ -238,6 +244,17 @@ public class ManagerPanel extends BankPanel {
             dlgBank.tryCreateNewStock(id, name, err);
             new MessageWindow(err.msg, dlgBank);
             dlgBank.switchManagerPanel();
+        }
+    }
+
+    private class RemoveStockListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            int stockID = Integer.parseInt(e.getActionCommand());
+            Msg err = new Msg();
+            if (dlgBank.tryRemoveStock(stockID, err)) {
+                dlgBank.switchManagerPanel();
+            }
+            new MessageWindow(err.msg, dlgBank);
         }
     }
 }

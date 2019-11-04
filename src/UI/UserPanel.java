@@ -34,6 +34,9 @@ public class UserPanel extends BankPanel {
         JButton btnLog = new JButton("Log");
         btnLog.addActionListener(new LogListener());
         add(btnLog);
+        JButton btnStockList = new JButton("Stock List");
+        btnStockList.addActionListener(new StockListListener());
+        add(btnStockList);
     }
 
     public void update(String name, ArrayList<Account.AccountInfo> accountsInfo) {
@@ -44,7 +47,8 @@ public class UserPanel extends BankPanel {
                 MoneyAccountItem item = new MoneyAccountItem(dlgBank, it);
                 pnlAccounts.add(item);
             } else {
-                //
+                StockAccountItem item = new StockAccountItem(dlgBank, it);
+                pnlAccounts.add(item);
             }
         }
     }
@@ -64,6 +68,12 @@ public class UserPanel extends BankPanel {
     private class LogListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             dlgBank.showUserLog();
+        }
+    }
+
+    private class StockListListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            new DlgStockList(dlgBank.getStockInfo(), dlgBank);
         }
     }
 }

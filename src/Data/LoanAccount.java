@@ -2,7 +2,7 @@ package Data;
 
 public class LoanAccount extends MoneyAccount {
 
-    public LoanAccount(int id, Money money) {
+    protected LoanAccount(int id, Money money) {
         super(id);
         money.amount *= -1;
         super.save(money);
@@ -28,7 +28,7 @@ public class LoanAccount extends MoneyAccount {
     }
 
     @Override
-    public boolean withdraw(final Money money, final Msg err) {
+    public boolean withdraw(Money money, Money fee, Msg err) {
         err.msg = "No withdrawl allowed for a loan account!";
         return false;
     }

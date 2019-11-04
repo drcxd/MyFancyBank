@@ -38,7 +38,9 @@ public class Bank {
 
     private HashMap<Integer, MoneyAccount> id2MoneyAccount = new HashMap<Integer, MoneyAccount>();
 
-    private HashMap<Integer, Stock> id2Stock = new HashMap<Integer, Stock>();
+    private HashMap<Integer, StockAccount> id2StockAccount = new HashMap<Integer, StockAccount>();
+
+    private static HashMap<Integer, Stock> id2Stock = new HashMap<Integer, Stock>();
 
     private DlgBank dlgBank;
 
@@ -109,12 +111,23 @@ public class Bank {
         return account;
     }
 
+    private StockAccount tryCreateStockAccount(Account.AccountType type, Msg err) {
+        if (activeUser.getUserNetWorthInCurrency(Money.Currency.USD).lessThan(SHARE_ACCOUNT_THRESHOLD)) {
+            err.msg = "You have no enough net worth to create a stock account!";
+            return null;
+        }
+        StockAccount account = activeUser.createStockAccount(type, globalAccountID);
+        id2StockAccount.put(globalAccountID, account);
+        err.msg = "Account Created!";
+        return account;
+    }
+
     public boolean tryCreateAccount(Account.AccountType type, Money money, Msg err) {
         Account account = null;
         if (type != Account.AccountType.Stock) {
             account = tryCreateMoneyAccount(type, money, err);
         } else {
-            // tryCreateStockAccount(type, err);
+            account = tryCreateStockAccount(type, err);
         }
         if (account != null) {
             id2Account.put(globalAccountID, account);
@@ -130,12 +143,12 @@ public class Bank {
             err.msg = "No such account to destroy!";
             return false;
         }
-        Account account = id2Account.get(id);
-        if (!activeUser.destroyAccount(account, err)) {
+        if (!activeUser.destroyAccount(id, err)) {
             return false;
         }
         id2Account.remove(id);
         id2MoneyAccount.remove(id);
+        id2StockAccount.remove(id);
         collectFee(DESTROY_ACCOUNT_FEE);
         Log.globalLogDestroyAccount(activeUser, globalAccountID, activeUser.getName());
         return true;
@@ -154,7 +167,7 @@ public class Bank {
         Integer id = Integer.valueOf(accountID);
         if (id2MoneyAccount.containsKey(id)) {
             MoneyAccount account = id2MoneyAccount.get(id);
-            if (account.withdraw(money, err)) {
+            if (account.withdraw(money, WITHDRAW_FEE, err)) {
                 collectFee(WITHDRAW_FEE);
                 Log.globalLogWithdraw(activeUser, id, activeUser.getName(), money);
                 return true;
@@ -249,11 +262,98 @@ public class Bank {
         return true;
     }
 
+    public boolean tryRemoveStock(int id, Msg err) {
+        boolean isValid = true;
+        for (Entry<Integer, StockAccount> it : id2StockAccount.entrySet()) {
+            if (it.getValue().possessStock(id)) {
+                isValid = false;
+                break;
+            }
+        }
+        if (!isValid) {
+            err.msg = "Remove failed! Some account still holds this stock!";
+            return false;
+        }
+        id2Stock.remove(Integer.valueOf(id));
+        err.msg = "Remove succeeded!";
+        return true;
+    }
+
     public ArrayList<Stock.StockInfo> getStockInfo() {
         ArrayList<Stock.StockInfo> info = new ArrayList<Stock.StockInfo>();
         for (Entry<Integer, Stock> it : id2Stock.entrySet()) {
             info.add(it.getValue().getInfo());
         }
         return info;
+    }
+
+    public static Stock.StockInfo queryStockInfo(int id) {
+        Integer key = Integer.valueOf(id);
+        if (id2Stock.containsKey(key)) {
+            return id2Stock.get(key).getInfo();
+        }
+        return null;
+    }
+
+    public static Money queryStockPrice(int id) {
+        Integer key = Integer.valueOf(id);
+        if (id2Stock.containsKey(key)) {
+            return new Money(id2Stock.get(key).price);
+        }
+        return null;
+    }
+
+    private boolean isInputValid(int assoAccntID, int stockID, Msg err) {
+        Integer key = Integer.valueOf(assoAccntID);
+        if (!id2Account.containsKey(key)) {
+            err.msg = "No such associated account!";
+            return false;
+        }
+        if (!id2MoneyAccount.containsKey(key)) {
+            err.msg = "Associated account must be a money account!";
+            return false;
+        }
+        if (!activeUser.hasAuthOnAccount(assoAccntID)) {
+            err.msg = "You have no authority to operate on this associated account!";
+            return false;
+        }
+        Integer stockKey = Integer.valueOf(stockID);
+        if (!id2Stock.containsKey(stockKey)) {
+            err.msg = "No such stock ID!";
+            return false;
+        }
+        return true;
+    }
+
+    public boolean tryBuyStock(int accountID, int assoAccntID, int stockID, int stockNum, Msg err) {
+        Integer key = Integer.valueOf(assoAccntID);
+        if (!isInputValid(assoAccntID, stockID, err)) {
+            return false;
+        }
+        MoneyAccount moneyAccount = id2MoneyAccount.get(key);
+        Money stockValue = queryStockPrice(stockID).mul(stockNum);
+        if (!moneyAccount.withdraw(stockValue, null, err)) {
+            return false;
+        }
+        StockAccount stockAccount = id2StockAccount.get(Integer.valueOf(accountID));
+        stockAccount.addStock(stockID, stockNum);
+        err.msg = "Buy stock succeeded!";
+        return true;
+    }
+
+    public boolean trySellStock(int accountID, int assoAccntID, int stockID, int stockNum, Msg err) {
+        Integer key = Integer.valueOf(assoAccntID);
+        if (!isInputValid(assoAccntID, stockID, err)) {
+            return false;
+        }
+        StockAccount stockAccount = id2StockAccount.get(Integer.valueOf(accountID));
+        if (!stockAccount.removeStock(stockID, stockNum, err)) {
+            return false;
+        }
+        Money stockValue = queryStockPrice(stockID).mul(stockNum);
+        MoneyAccount moneyAccount = id2MoneyAccount.get(key);
+        moneyAccount.save(stockValue);
+        err.msg = "Buy stock succeeded!";
+        return true;
     }
 }

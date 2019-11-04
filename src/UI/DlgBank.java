@@ -9,6 +9,7 @@ import Data.Bank;
 import Data.Money;
 import Data.Account;
 import Data.Msg;
+import Data.Stock;
 
 public class DlgBank extends JFrame {
     private final WelcomePanel welcomePanel = new WelcomePanel(this);
@@ -122,6 +123,21 @@ public class DlgBank extends JFrame {
         return bank.tryCreateNewStock(id, name, err);
     }
 
+    public boolean tryRemoveStock(int id, Msg err) {
+        return bank.tryRemoveStock(id, err);
+    }
+
+    public boolean tryBuyStock(int accountID, int assoAccntID, int stockID, int stockNum, Msg err) {
+        return bank.tryBuyStock(accountID, assoAccntID, stockID, stockNum, err);
+    }
+
+    public boolean trySellStock(int accountID, int assoAccntID, int stockID, int stockNum, Msg err) {
+        return bank.trySellStock(accountID, assoAccntID, stockID, stockNum, err);
+    }
+
+    public ArrayList<Stock.StockInfo> getStockInfo() {
+        return bank.getStockInfo();
+    }
     public void switchUserLoginPanel() {
         getContentPane().removeAll();
         add(userLoginPanel);

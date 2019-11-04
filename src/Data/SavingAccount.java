@@ -1,7 +1,7 @@
 package Data;
 
 public class SavingAccount extends MoneyAccount {
-    public SavingAccount(int id) {
+    protected SavingAccount(int id) {
         super(id);
     }
 }

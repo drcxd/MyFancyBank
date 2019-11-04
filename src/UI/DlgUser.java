@@ -6,6 +6,8 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 import Data.Account;
+import Data.MoneyAccount;
+import Data.StockAccount;
 
 public class DlgUser extends JFrame {
     public DlgUser(String name, ArrayList<Account.AccountInfo> accntInfo, Component parent) {
@@ -17,7 +19,11 @@ public class DlgUser extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         for (Account.AccountInfo it : accntInfo) {
-            panel.add(new AccountInfoPanel(it));
+            if (it instanceof MoneyAccount.MoneyAccountInfo) {
+                panel.add(new MoneyAccountInfoPanel(it));
+            } else {
+                panel.add(new StockAccountInfoPanel(it));
+            }
         }
         add(panel);
 

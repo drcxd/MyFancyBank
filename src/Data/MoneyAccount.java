@@ -23,7 +23,7 @@ public abstract class MoneyAccount extends Account {
         return account;
     }
 
-    public MoneyAccount(int id) {
+    protected MoneyAccount(int id) {
         super(id);
     }
 
@@ -55,8 +55,8 @@ public abstract class MoneyAccount extends Account {
         deposit.addMoney(money);
     }
 
-    public boolean withdraw(final Money money, final Msg err) {
-        return deposit.takeOutMoney(money, err, Bank.WITHDRAW_FEE);
+    public boolean withdraw(Money money, Money fee, Msg err) {
+        return deposit.takeOutMoney(money, fee, err);
     }
 
     public boolean transact(Money money, MoneyAccount account, Msg err) { return false; }
@@ -77,11 +77,7 @@ public abstract class MoneyAccount extends Account {
         public MoneyAccountInfo(String type, String id, String interestRate, Deposit.DepositInfo depositInfo) {
             super(type, id);
             fields.add(interestRate);
-            fields.add("" + depositInfo.moneyInfo.size());
-            for (Money.MoneyInfo it : depositInfo.moneyInfo) {
-                fields.add(it.type);
-                fields.add(it.amount);
-            }
+            fields.add(depositInfo);
         }
     }
 }

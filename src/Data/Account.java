@@ -25,7 +25,7 @@ abstract public class Account {
     public abstract AccountInfo getAccountInfo();
 
     abstract public class AccountInfo {
-        protected ArrayList<String> fields = new ArrayList<String>();
+        protected ArrayList<Object> fields = new ArrayList<Object>();
 
         private int index = 0;
 
@@ -34,7 +34,7 @@ abstract public class Account {
             fields.add(type);
         }
 
-        public String getNextField() {
+        public Object getNextField() {
             if (index < fields.size()) {
                 return fields.get(index++);
             }

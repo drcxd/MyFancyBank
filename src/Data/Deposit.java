@@ -16,9 +16,9 @@ public class Deposit {
         }
     }
 
-    public boolean takeOutMoney(final Money money, final Msg err, final Money fee) {
+    public boolean takeOutMoney(Money money, Money fee, Msg err) {
         if (!currency2Money.containsKey(money.currency)) {
-            err.msg = "You have no much money to withdraw!";
+            err.msg = "You do not have enough money!";
             return false;
         }
         Money depositMoney = currency2Money.get(money.currency);
@@ -26,7 +26,7 @@ public class Deposit {
             money.add(fee);
         }
         if (depositMoney.lessThan(money)) {
-            err.msg = "You have no much money to withdraw!";
+            err.msg = "You do not have enough money!";
             return false;
         }
         depositMoney.sub(money);
