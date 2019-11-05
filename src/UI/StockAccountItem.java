@@ -26,14 +26,14 @@ public class StockAccountItem extends BankPanel {
 
         add(new StockAccountInfoPanel(info));
 
-        // info.reset();
+        info.reset();
 
-        // String strID = (String)info.getNextField();
+        String strID = (String)info.getNextField();
         // String strType = (String)info.getNextField();
         // ArrayList<StockAccount.AccountStockInfo> accntStockInfo = (ArrayList<StockAccount.AccountStockInfo>)info.getNextField();
         // Money.MoneyInfo netWorth = (Money.MoneyInfo)info.getNextField();
 
-        // accountID = Integer.parseInt(strID);
+        accountID = Integer.parseInt(strID);
 
 
         // add(new JLabel("Account ID: " + strID));
