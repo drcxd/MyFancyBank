@@ -1,6 +1,6 @@
-package stock;
+package DBStock;
 
-public class Stock {
+public class DBStock {
     public static class Builder {
         private int id;
         private double price;
@@ -17,14 +17,14 @@ public class Stock {
             this.name = name;
             return this;
         }
-        public Stock build() {
-            return new Stock(id, name, price);
+        public DBStock build() {
+            return new DBStock(id, name, price);
         }
     }
     private int id;
     private double price;
     private String name;
-    public Stock(int id, String name, double price) {
+    public DBStock(int id, String name, double price) {
         this.id = id;
         this.name = name;
         this.price = price;

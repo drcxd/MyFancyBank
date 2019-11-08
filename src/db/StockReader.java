@@ -1,5 +1,5 @@
 package db;
-import stock.Stock;
+import DBStock.DBStock;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,13 +10,13 @@ public class StockReader extends BaseDBReader {
     public StockReader() {
         initConnection();
     }
-    public Stock getById(int id) {
+    public DBStock getById(int id) {
         try {
             String sql = "SELECT * FROM stocks WHERE stock_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, String.valueOf(id));
             ResultSet rs = stmt.executeQuery();
-            Stock.Builder builder = new Stock.Builder();
+            DBStock.Builder builder = new DBStock.Builder();
             rs.next();
             builder.setId(Integer.valueOf(rs.getString("stock_id")));
             builder.setName(rs.getString("name"));
@@ -28,7 +28,7 @@ public class StockReader extends BaseDBReader {
         return null;
     }
 
-    public boolean insert(Stock stock) {
+    public boolean insert(DBStock stock) {
         try {
             String sql = "INSERT IGNORE INTO stocks VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
