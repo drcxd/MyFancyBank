@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 public class StockAccount extends Account {
 
-    protected HashMap<Integer/* StockID */, Integer/* Number of Share */> id2Stock = new HashMap<Integer, Integer>();
+    protected HashMap<Integer/* StockID */, UserStock> id2Stock = new HashMap<Integer, UserStock>();
 
     public static StockAccount createAccount(AccountType type, int accountID) {
         return new StockAccount(accountID);
@@ -24,8 +24,10 @@ public class StockAccount extends Account {
     @Override
     public AccountInfo getAccountInfo() {
         ArrayList<AccountStockInfo> stockInfo = new ArrayList<AccountStockInfo>();
-        for (Entry<Integer, Integer> it : id2Stock.entrySet()) {
-            stockInfo.add(new AccountStockInfo(Bank.queryStockInfo(it.getKey().intValue()), it.getValue().intValue()));
+        for (Entry<Integer, UserStock> it : id2Stock.entrySet()) {
+            stockInfo.add(new AccountStockInfo(Bank.queryStockInfo(it.getKey().intValue()),
+                                               it.getValue().number,
+                                               new Money(it.getValue().price)));
         }
         return new StockAccountInfo(getClass().getSimpleName(),
                                     Integer.toString(id),
@@ -36,8 +38,8 @@ public class StockAccount extends Account {
     @Override
     public Money getNetWorth(Money.Currency currency) {
         Money netWorth = new Money(currency, 0);
-        for (Entry<Integer, Integer> it : id2Stock.entrySet()) {
-            netWorth.add(Bank.queryStockPrice(it.getKey().intValue()).mul(it.getValue().intValue()));
+        for (Entry<Integer, UserStock> it : id2Stock.entrySet()) {
+            netWorth.add(Bank.queryStockPrice(it.getKey().intValue()).mul(it.getValue().number));
         }
         return netWorth;
     }
@@ -45,22 +47,22 @@ public class StockAccount extends Account {
     public void addStock(int stockID, int stockNum) {
         Integer key = Integer.valueOf(stockID);
         if (id2Stock.containsKey(key)) {
-            id2Stock.replace(key, Integer.valueOf(id2Stock.get(key).intValue() + stockNum));
+            id2Stock.get(key).number += stockNum;
         } else {
-            id2Stock.put(key, Integer.valueOf(stockNum));
+            id2Stock.put(key, new UserStock(stockID, stockNum, Bank.queryStockPrice(stockID)));
         }
     }
 
     public boolean removeStock(int stockID, int stockNum, Msg err) {
         Integer key = Integer.valueOf(stockID);
-        if (!id2Stock.containsKey(key) || id2Stock.get(key).intValue() < stockNum) {
+        if (!id2Stock.containsKey(key) || id2Stock.get(key).number < stockNum) {
             err.msg = "No enough stock!";
             return false;
         }
-        if (id2Stock.get(key).intValue() == stockNum) {
+        if (id2Stock.get(key).number == stockNum) {
             id2Stock.remove(key);
         } else {
-            id2Stock.replace(key, Integer.valueOf(id2Stock.get(key).intValue() - stockNum));
+            id2Stock.get(key).number -= stockNum;
         }
         return true;
     }
@@ -80,10 +82,12 @@ public class StockAccount extends Account {
     public class AccountStockInfo {
         public Stock.StockInfo stockInfo;
         public int number;
+        public Money price;
 
-        public AccountStockInfo(Stock.StockInfo stockInfo, int number) {
+        public AccountStockInfo(Stock.StockInfo stockInfo, int number, Money price) {
             this.stockInfo = stockInfo;
             this.number = number;
+            this.price= price;
         }
     }
 }
