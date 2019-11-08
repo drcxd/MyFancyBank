@@ -34,15 +34,18 @@ public class Log {
         dest.msg = dest.msg.concat(content);
     }
 
+    public static void createUserLog(User user) {
+        if (!userLog.containsKey(user)) {
+            userLog.put(user, new Msg());
+        }
+    }
+
     private static String makeCreateUserLog(String name) {
         return String.format("[%s] User %s was created\n", getCurrentTime(), name);
     }
 
     public static void globalLogCreateUser(User user, String name) {
         log(globalLog, makeCreateUserLog(name));
-        if (!userLog.containsKey(user)) {
-            userLog.put(user, new Msg());
-        }
         log(userLog.get(user), makeCreateUserLog(name));
      }
 

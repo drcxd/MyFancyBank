@@ -24,6 +24,10 @@ abstract public class Account {
 
     public abstract AccountInfo getAccountInfo();
 
+    public int getAccountID() {
+        return id;
+    }
+
     abstract public class AccountInfo {
         protected ArrayList<Object> fields = new ArrayList<Object>();
 

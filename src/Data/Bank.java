@@ -44,11 +44,11 @@ public class Bank {
 
     private DlgBank dlgBank;
 
-    private int globalUserID = 10001;
-
     private int globalAccountID = 10001;
 
     private User activeUser;
+
+    private DBManager dbManager = new DBManager();
 
     public MoneyAccount bankerAccount = new SavingAccount(10000);
 
@@ -66,11 +66,11 @@ public class Bank {
     }
 
     private void loadAllUser() {
-        // TODO
+        dbManager.loadAllUser(name2User, id2Account, id2MoneyAccount, id2StockAccount);
     }
 
     private void loadAllStock() {
-        // TODO
+        dbManager.loadAllStock(id2Stock);
     }
 
     public boolean userExists(final String name) {
@@ -78,10 +78,11 @@ public class Bank {
     }
 
     public void createUser(final String name) {
-        User user = new User(name, globalUserID);
-        ++globalUserID;
+        User user = new User(name);
         name2User.put(name, user);
+        Log.createUserLog(user);
         Log.globalLogCreateUser(user, name);
+        dbManager.createUser(user);
     }
 
     public void userLogin(final String name) {
@@ -105,21 +106,32 @@ public class Bank {
     }
 
     private MoneyAccount tryCreateMoneyAccount(Account.AccountType type, Money money, Msg err) {
-        if (type != Account.AccountType.Loan) {
+        if (type == Account.AccountType.Loan) {
+            if (money.amount > activeUser.getUserNetWorthInCurrency(money.currency).amount * LOAN_COLLATERAL_MULTIPLIER) {
+                err.msg = "You need more deposit to take the loan!";
+                return null;
+            }
+            money.amount *= -1;
+        } else {
             if (money.lessThan(CREATE_ACCOUNT_FEE)) {
                 err.msg = "You need to deposit at least " + CREATE_ACCOUNT_FEE.currency + " " + CREATE_ACCOUNT_FEE.amount + "!";
                 return null;
             }
             collectFee(CREATE_ACCOUNT_FEE);
-        } else {
-            if (money.amount > activeUser.getUserNetWorthInCurrency(money.currency).amount * LOAN_COLLATERAL_MULTIPLIER) {
-                err.msg = "You need more deposit to take the loan!";
-                return null;
-            }
+            money.sub(CREATE_ACCOUNT_FEE);
         }
+
         MoneyAccount account = activeUser.createMoneyAccount(type, money, globalAccountID);
+
+        if (type == Account.AccountType.Loan) {
+            account.setInterestRate(LOAN_RATE);
+        } else if (type == Account.AccountType.Checking) {
+            account.setInterestRate(INTEREST_RATE);
+        }
+
         id2MoneyAccount.put(globalAccountID, account);
         Log.globalLogCreateAccount(activeUser, globalAccountID, activeUser.getName(), type, money);
+        dbManager.updateMoneyAccount(activeUser, account);
         err.msg = "Account Created!";
         return account;
     }
@@ -131,6 +143,7 @@ public class Bank {
         }
         StockAccount account = activeUser.createStockAccount(type, globalAccountID);
         id2StockAccount.put(globalAccountID, account);
+        dbManager.updateStockAccount(activeUser, account);
         err.msg = "Account Created!";
         return account;
     }
@@ -349,7 +362,7 @@ public class Bank {
             return false;
         }
         StockAccount stockAccount = id2StockAccount.get(Integer.valueOf(accountID));
-        stockAccount.addStock(stockID, stockNum);
+        stockAccount.addStock(stockID, stockNum, queryStockPrice(stockID));
         err.msg = "Buy stock succeeded!";
         return true;
     }
