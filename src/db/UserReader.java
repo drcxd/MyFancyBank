@@ -15,7 +15,19 @@ public class UserReader extends BaseDBReader {
     }
     public boolean insert( User u ) {
         try {
-            String sql = "INSERT IGNORE INTO users VALUES (?, ?, ?, ?, ?, ?, ?,?)";
+            String sql = "INSERT " +
+                         "INTO users " +
+                         "(name, account_id, account_type, currency_type, money, stock_id, stock_amount, interest_rate,purchased_price_of_stock) "+
+                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)" +
+                         "ON DUPLICATE KEY UPDATE " +
+                         "name = VALUES(name), " +
+                         "account_id = VALUES(account_id)," +
+                         "account_type = VALUES(account_type)," +
+                         "currency_type = VALUES(currency_type)," +
+                         "stock_id = VALUES(stock_id)," +
+                         "stock_amount = VALUES(stock_amount)," +
+                         "interest_rate = VALUES(interest_rate)," +
+                         "purchased_price_of_stock = VALUES(purchased_price_of_stock)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, u.getName());
             stmt.setInt(2, u.getAccount_id());
@@ -25,6 +37,7 @@ public class UserReader extends BaseDBReader {
             stmt.setInt(6,u.getStock_id());
             stmt.setInt(7,u.getStock_amount());
             stmt.setDouble(8,u.getInterest());
+            stmt.setDouble(9,u.getPurchased_price_of_stock());
             stmt.execute();
             return true;
         } catch (Exception e) {
@@ -162,6 +175,7 @@ public class UserReader extends BaseDBReader {
                 int stock_id = rs.getInt(6);
                 int stock_amount = rs.getInt(7);
                 double interest_rate = rs.getDouble(8);
+                double purchased_price_of_stock = rs.getDouble(9);
                 /*
                 System.out.println(" name = " + user_name + " account_id: " + acc_id + " account_type" + acc_type
                 +" currency_type:" + curr_type + " money in account : " + money_);
@@ -174,6 +188,7 @@ public class UserReader extends BaseDBReader {
                 builder.setStock_id(stock_id);
                 builder.setStock_amount(stock_amount);
                 builder.setInterest(interest_rate);
+                builder.setPurchased_price_of_stock(purchased_price_of_stock);
 
                 user_list.add(builder.build());
             }
@@ -226,6 +241,56 @@ public class UserReader extends BaseDBReader {
         }
         return null;
     }
+
+    public void update_account(int account_id, int currency_type, double amount){
+        try {
+            String sql = "UPDATE users " +
+                         "SET  money  = ? " +
+                         "WHERE account_id = ? AND currency_type = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setDouble(1, amount);
+            stmt.setInt(2, account_id);
+            stmt.setInt(3, currency_type);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void update_stock(int account_id, int stock_id, int stock_amount, double purchased_price_of_stock ){
+        try {
+            String sql = "UPDATE users " +
+                         "SET  stock_amount  = ?, " +
+                         "purchased_price_of_stock = ?" +
+                         "WHERE account_id = ? AND stock_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, stock_amount);
+            stmt.setDouble(2, purchased_price_of_stock);
+            stmt.setInt(3, account_id);
+            stmt.setInt(4, stock_id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void delete_account(int account_id){
+        try {
+            String sql = "DELETE " +
+                         "FROM users " +
+                         "WHERE account_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, account_id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
 
 

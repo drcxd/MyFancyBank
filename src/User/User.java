@@ -12,6 +12,7 @@ public class User {
         private int stock_id;
         private int stock_amount;
         private double interest;
+        private double purchased_price_of_stock;
         /*
         public Builder setId(int id) {
             this.user_id = id;
@@ -51,10 +52,15 @@ public class User {
             this.interest = interest;
             return this;
         }
+        public Builder setPurchased_price_of_stock(double purchased_price_of_stock) {
+            this.purchased_price_of_stock = purchased_price_of_stock;
+            return this;
+        }
+
 
 
         public User build() {
-            return new User(name, account_id, account_type, currency_type, money, stock_id, stock_amount,interest);
+            return new User(name, account_id, account_type, currency_type, money, stock_id, stock_amount,interest, purchased_price_of_stock);
         }
     }
     //private int user_id;
@@ -66,7 +72,8 @@ public class User {
     private int stock_id;
     private int stock_amount;
     private double interest;
-    public User (String name, int account_id, int account_type, int currency_type, double money, int stock_id, int stock_amount, double interest   ) {
+    private  double purchased_price_of_stock;
+    public User (String name, int account_id, int account_type, int currency_type, double money, int stock_id, int stock_amount, double interest, double purchased_price_of_stock) {
         //this.user_id = id;
         this.name = name;
         this.account_id = account_id;
@@ -76,6 +83,7 @@ public class User {
         this.stock_id = stock_id;
         this.stock_amount = stock_amount;
         this.interest = interest;
+        this.purchased_price_of_stock = purchased_price_of_stock;
     }
     /*
     public int getId() {
@@ -151,14 +159,26 @@ public class User {
         this.interest = interest;
     }
 
+    public double getPurchased_price_of_stock() {
+        return purchased_price_of_stock;
+    }
+
+    public void setPurchased_price_of_stock(double purchased_price_of_stock) { this.purchased_price_of_stock = purchased_price_of_stock; }
+
 
 
 
     @Override
     public String toString() {
-        return String.format(" Name: " + this.getName() + " Account_id: " + this.getAccount_id()
-                             + " Account_type" + this.getAccount_type() + " Currency_type" + this.getCurrency_type() + " Money:" + this.getMoney()
-                             + " Stock_ id : " + this.getStock_id() + " Stock_amount: " + this.getStock_amount()
-                             + "Interest_rate : " + this.getInterest());
+        return String.format(  "\n" + " Name: " + this.getName()
+                             + "\n" + " Account_id: " + this.getAccount_id()
+                             + "\n" + " Account_type: " + this.getAccount_type()
+                             + "\n" + " Currency_type: " +  this.getCurrency_type()
+                             + "\n" + " Money:" + this.getMoney()
+                             + "\n" + " Stock_ id : " + this.getStock_id()
+                             + "\n" + " Stock_amount: " + this.getStock_amount()
+                             + "\n" + " Interest_rate : " + this.getInterest())
+                             + "\n" + "Purchased price of stock: " + this.purchased_price_of_stock
+                             + "\n";
     }
 }

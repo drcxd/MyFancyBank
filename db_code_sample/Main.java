@@ -1,3 +1,5 @@
+import db.InfoReader;
+import db.LogReader;
 import db.StockReader;
 import db.UserReader;
 import stock.Stock;
@@ -34,16 +36,21 @@ public class Main {
         UserReader ud = new UserReader();
         // add user
         // sample checking account insertion , put -1 for stock id for both checking and saving account
-        User u1 = new User.Builder().setName("John").setAcc_id(0000).setAcc_type(0).setCurr_type(0).setMoney(100.0).setStock_id(-1).setStock_amount(-1).setInterest(0.15).build();
+        User u1 = new User.Builder().setName("John").setAcc_id(0000).setAcc_type(0).setCurr_type(0).setMoney(100.0).setStock_id(-1).setStock_amount(-1).setInterest(0.15).setPurchased_price_of_stock(-1).build();
         ud.insert(u1);
         // sample saving account insertion
-        User u2 = new User.Builder().setName("John").setAcc_id(0001).setAcc_type(1).setCurr_type(0).setMoney(5000.0).setStock_id(-1).setStock_amount(-1).setInterest(0.15).build();
+        User u2 = new User.Builder().setName("John").setAcc_id(0001).setAcc_type(1).setCurr_type(0).setMoney(5000.0).setStock_id(-1).setStock_amount(-1).setInterest(0.15).setPurchased_price_of_stock(-1).build();
         ud.insert(u2);
         //sample stock account insertion
-        User u3 = new User.Builder().setName("John").setAcc_id(0002).setAcc_type(2).setCurr_type(0).setMoney(10000.0).setStock_id(1).setStock_amount(125).setInterest(-1).build();
+        User u3 = new User.Builder().setName("John").setAcc_id(0002).setAcc_type(2).setCurr_type(0).setMoney(10000.0).setStock_id(1).setStock_amount(125).setInterest(-1).setPurchased_price_of_stock(25).build();
         ud.insert(u3);
-        User u4 = new User.Builder().setName("John").setAcc_id(0002).setAcc_type(2).setCurr_type(0).setMoney(10000.0).setStock_id(2).setStock_amount(35).setInterest(-1).build();
+        User u4 = new User.Builder().setName("John").setAcc_id(0002).setAcc_type(2).setCurr_type(0).setMoney(10000.0).setStock_id(2).setStock_amount(35).setInterest(-1).setPurchased_price_of_stock(16).build();
         ud.insert(u4);
+
+        User u5 = new User.Builder().setName("Test").build();
+        ud.insert(u5);
+        User u6 = new User.Builder().setName("John").setAcc_id(0002).setAcc_type(6666).setCurr_type(0).setMoney(20000.0).setStock_id(2).setStock_amount(35000).setInterest(-1000).setPurchased_price_of_stock(-1).build();
+        ud.insert(u6);
 
 
         // print all accounts and asscociated info with this user
@@ -72,13 +79,40 @@ public class Main {
         // 6. get account contents by id
         ArrayList<User> Accounts_id_user = ud.getByAccountId(2);
         System.out.println(" All contents associcate with account id 2 : " + Accounts_id_user.toString() );
-
+        System.out.println(" END print contents for id 2" );
         // 7. get all stock id
         System.out.println(sd.getAllIds());
         // 8. get stock by id
         System.out.println(sd.getById(3));
 
+        // 9. update money given account id and currency type
+        ud.update_account(2,0,99999.0);
+        //10. update stock amount and price when purchased
+        ud.update_stock(2,2,2000,100000000);
+
+        //11. delete account by id
+        ud.delete_account(2);
+
+        //12. log function
+        //12.1 insert log for user : note : special name for "global", referring the global logs
+        LogReader ld = new LogReader();
+        ld.insert("John", " Withdraw 20 ");
+        ld.insert("John", "Transferred 1000 from checking to saving ");
+        ld.insert("John", " Withdraw 100 ");
+        //12.2 return the logs given a user name
+        String all_logs = ld.getLog_by_Name("John");
+        System.out.println("All logs for John:  " + all_logs);
+
+        InfoReader info = new InfoReader();
+        info.insert("Opening fee", 5.0);
+        info.insert("Withdraw fee", 15.0);
+        double Openning_fee = info.getInfo("opening fee");
+        double Withdraw_fee = info.getInfo("Withdraw fee");
+        System.out.println(Openning_fee);
+        System.out.println(Withdraw_fee);
 
         sd.closeConnection();
+        ud.closeConnection();
+        ld.closeConnection();
     }
 }
