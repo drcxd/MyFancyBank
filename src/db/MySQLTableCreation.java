@@ -33,6 +33,12 @@ public class MySQLTableCreation {
             String sql = "DROP TABLE IF EXISTS users_stock";
             stmt.executeUpdate(sql);
 
+            sql = "DROP TABLE IF EXISTS logs";
+            stmt.executeUpdate(sql);
+
+            sql = "DROP TABLE IF EXISTS info";
+            stmt.executeUpdate(sql);
+
             sql = "DROP TABLE IF EXISTS users";
             stmt.executeUpdate(sql);
 
@@ -50,6 +56,7 @@ public class MySQLTableCreation {
                     + "stock_id INTEGER ,"
                     + "stock_amount INTEGER,"
                     + "interest_rate DOUBLE,"
+                    + "purchased_price_of_stock DOUBLE,"
                     + "PRIMARY KEY (name,account_id,currency_type,stock_id))";
             stmt.executeUpdate(sql);
 
@@ -71,6 +78,19 @@ public class MySQLTableCreation {
                     + "FOREIGN KEY (stock_id) REFERENCES stocks(stock_id),"
                     + "FOREIGN KEY (name) REFERENCES users(name))";
             stmt.executeUpdate(sql);
+
+
+            sql =  "CREATE TABLE logs ("
+                    + "name VARCHAR(255),"
+                    + "log  VARCHAR(8000))";
+            stmt.executeUpdate(sql);
+
+            sql =  "CREATE TABLE info ("
+                    + "name VARCHAR(255),"
+                    + "Value DOUBLE, PRIMARY KEY (name))";
+            stmt.executeUpdate(sql);
+
+
             // Step 4: insert data
 //            sql = "INSERT INTO users VALUES ("
 //                    + "'1111', '3229c1097c00d497a0fd282d586be050', 'John', 'Smith')";
