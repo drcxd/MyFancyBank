@@ -290,6 +290,19 @@ public class UserReader extends BaseDBReader {
 
     }
 
+    public void update_interest_rate(int account_id, double interest_rate){
+        try {
+            String sql = "UPDATE users " +
+                         "SET  interest_rate  = ? " +
+                         "WHERE account_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setDouble(1, interest_rate);
+            stmt.setInt(2, account_id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
