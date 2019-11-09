@@ -111,8 +111,11 @@ public class Main {
         System.out.println(Openning_fee);
         System.out.println(Withdraw_fee);
 
+        //12.3 change interest rate given an account id
+        ud.update_interest_rate(1,300000000.0);
         sd.closeConnection();
         ud.closeConnection();
         ld.closeConnection();
+        info.closeConnection();
     }
 }
