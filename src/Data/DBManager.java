@@ -14,12 +14,12 @@ public class DBManager {
 
     private StockReader stockReader = new StockReader();
 
-    void createUser(User user) {
+    public void createUser(User user) {
         DBUser u = new DBUser.Builder().setName(user.getName()).build();
         userReader.insert(u);
     }
 
-    void updateMoneyAccount(User user, MoneyAccount moneyAccount) {
+    public void createMoneyAccount(User user, MoneyAccount moneyAccount) {
         String name = user.getName();
         int id = moneyAccount.getAccountID();
         int accountType = Account.AccountType.valueOf(moneyAccount.getClass().getSimpleName()).ordinal();
@@ -36,17 +36,43 @@ public class DBManager {
         }
     }
 
-    void updateStockAccount(User user, StockAccount stockAccount) {
+    public void createStockAccount(User user, StockAccount stockAccount) {
         String name = user.getName();
         int id = stockAccount.getAccountID();
         int accountType = Account.AccountType.valueOf(stockAccount.getClass().getSimpleName()).ordinal();
-        ArrayList<UserStock> stocks = stockAccount.getAllStock();
-        for (UserStock stock : stocks) {
-            int stockID = stock.stockID;
-            int stockNum = stock.number;
-            DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).setStock_id(stockID).setStock_amount(stockNum).build();
-            userReader.insert(u);
+        DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).build();
+        userReader.insert(u);
+    }
+
+    public void deleteAccount(int accountID) {
+        userReader.delete_account(accountID);
+    }
+
+    public void updateMoneyAccount(MoneyAccount account, Money.Currency currency) {
+        Money m = account.query(currency);
+        userReader.update_account(account.getAccountID(),
+                                  m.currency.ordinal(),
+                                  m.amount);
+    }
+
+    public void createStock(Stock stock) {
+        DBStock s = new DBStock.Builder().setId(stock.id).setName(stock.name).setPrice(stock.price.amount).build();
+        stockReader.insert(s);
+    }
+
+    public void deleteStock(int id) {
+        stockReader.delete(id);
+    }
+
+    public void updateStockAccount(StockAccount account, int stockID) {
+        UserStock userStock = account.queryStock(stockID);
+        if (userStock == null) {
+            return;
         }
+        userReader.update_stock(account.getAccountID(),
+                                 stockID,
+                                 userStock.number,
+                                 userStock.price.amount);
     }
 
     public void loadAllStock(HashMap<Integer, Stock> id2Stock) {
@@ -58,11 +84,11 @@ public class DBManager {
         }
     }
 
-    public void loadAllUser(HashMap<String, User> name2User,
+    public int loadAllUser(HashMap<String, User> name2User,
                             HashMap<Integer, Account> id2Account,
                             HashMap<Integer, MoneyAccount> id2MoneyAccount,
                             HashMap<Integer, StockAccount> id2StockAccount) {
-        int maxAccountID = 0;
+        int maxAccountID = 10000;
         // read all user name
         ArrayList<String> userNames = userReader.getAllUser();
         for (String name : userNames) {
@@ -82,7 +108,7 @@ public class DBManager {
                 ArrayList<DBUser> content = userReader.getByAccountId(accountID.intValue());
                 Account.AccountType type = Account.AccountType.values()[content.get(0).getAccount_type()];
                 Account account = null;
-                if (type == Account.AccountType.Stock) {
+                if (type == Account.AccountType.StockAccount) {
                     StockAccount stockAccount = user.createStockAccount(type, accountID.intValue());
                     account = stockAccount;
                     id2StockAccount.put(accountID.intValue(), stockAccount);
@@ -92,7 +118,7 @@ public class DBManager {
                         }
                         stockAccount.addStock(entry.getStock_id(),
                                               entry.getStock_amount(),
-                                              new Money(Money.Currency.USD, 0)); // TODO remove hardcode 0
+                                              new Money(Money.Currency.USD, entry.getPurchased_price_of_stock()));
                     }
                 } else {
                     Money first = new Money(Money.Currency.values()[content.get(0).getCurrency_type()],
@@ -109,5 +135,6 @@ public class DBManager {
                 id2Account.put(accountID.intValue(), account);
             }
         }
+        return maxAccountID;
     }
 }

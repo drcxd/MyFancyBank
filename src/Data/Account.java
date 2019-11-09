@@ -6,10 +6,10 @@ import java.util.ArrayList;
 abstract public class Account {
 
     public enum AccountType {
-        Saving,
-        Checking,
-        Loan,
-        Stock,
+        SavingAccount,
+        CheckingAccount,
+        LoanAccount,
+        StockAccount,
     };
 
     protected final int id;

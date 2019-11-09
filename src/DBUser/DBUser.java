@@ -5,11 +5,11 @@ public class DBUser {
     public static class Builder {
         //private int user_id;
         private String name;
-        private int account_id;
+        private int account_id = 0;
         private int account_type;
         private int currency_type;
         private double money;
-        private int stock_id;
+        private int stock_id = -1;
         private int stock_amount;
         private double interest;
         private double purchased_price_of_stock;

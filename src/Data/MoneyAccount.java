@@ -7,13 +7,13 @@ public abstract class MoneyAccount extends Account {
 
     public static MoneyAccount createAccount(AccountType type, int id, Money money) {
         MoneyAccount account = null;
-        if (type == AccountType.Saving) {
+        if (type == AccountType.SavingAccount) {
             account = new SavingAccount(id);
             account.save(money);
-        } else if (type == AccountType.Checking) {
+        } else if (type == AccountType.CheckingAccount) {
             account = new CheckingAccount(id);
             account.save(money);
-        } else if (type == AccountType.Loan) {
+        } else if (type == AccountType.LoanAccount) {
             account = new LoanAccount(id, money);
         }
         return account;

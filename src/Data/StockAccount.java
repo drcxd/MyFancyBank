@@ -47,7 +47,10 @@ public class StockAccount extends Account {
     public void addStock(int stockID, int stockNum, Money price) {
         Integer key = Integer.valueOf(stockID);
         if (id2Stock.containsKey(key)) {
-            id2Stock.get(key).number += stockNum;
+            UserStock userStock = id2Stock.get(key);
+            double newPrice = (userStock.price.amount * userStock.number + price.amount * stockNum) / (userStock.number + stockNum);
+            userStock.number += stockNum;
+            userStock.price.amount = newPrice;
         } else {
             id2Stock.put(key, new UserStock(stockID, stockNum, price));
         }
@@ -73,6 +76,14 @@ public class StockAccount extends Account {
             stocks.add(it.getValue());
         }
         return stocks;
+    }
+
+    public UserStock queryStock(int id) {
+        Integer key = Integer.valueOf(id);
+        if (id2Stock.containsKey(key)) {
+            return id2Stock.get(key);
+        }
+        return null;
     }
 
     public boolean possessStock(int id) {
