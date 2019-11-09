@@ -1,6 +1,6 @@
 package db;
 
-import User.User;
+import DBUser.DBUser;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +13,7 @@ public class UserReader extends BaseDBReader {
     public UserReader() {
         initConnection();
     }
-    public boolean insert( User u ) {
+    public boolean insert( DBUser u ) {
         try {
             String sql = "INSERT " +
                          "INTO users " +
@@ -157,7 +157,7 @@ public class UserReader extends BaseDBReader {
 
 
     // get info for all accounts for a specic user
-    public ArrayList<User> getByName(String name) {
+    public ArrayList<DBUser> getByName(String name) {
         try {
             String sql = "SELECT * FROM users WHERE name = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -166,7 +166,7 @@ public class UserReader extends BaseDBReader {
             ArrayList user_list = new ArrayList();
 
             while (rs.next()){
-                User.Builder builder = new User.Builder();
+                DBUser.Builder builder = new DBUser.Builder();
                 String user_name = rs.getString(1);
                 int acc_id = rs.getInt(2);
                 int acc_type = rs.getInt(3);
@@ -201,7 +201,7 @@ public class UserReader extends BaseDBReader {
 
 
     // get info for all accounts for a specic user
-    public ArrayList<User> getByAccountId(int account_id) {
+    public ArrayList<DBUser> getByAccountId(int account_id) {
         try {
             String sql = "SELECT * FROM users WHERE account_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -210,7 +210,7 @@ public class UserReader extends BaseDBReader {
             ArrayList user_list = new ArrayList();
 
             while (rs.next()){
-                User.Builder builder = new User.Builder();
+                DBUser.Builder builder = new DBUser.Builder();
                 String user_name = rs.getString(1);
                 int acc_id = rs.getInt(2);
                 int acc_type = rs.getInt(3);

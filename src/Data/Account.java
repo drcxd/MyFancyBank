@@ -6,10 +6,10 @@ import java.util.ArrayList;
 abstract public class Account {
 
     public enum AccountType {
-        Saving,
-        Checking,
-        Loan,
-        Stock,
+        SavingAccount,
+        CheckingAccount,
+        LoanAccount,
+        StockAccount,
     };
 
     protected final int id;
@@ -23,6 +23,10 @@ abstract public class Account {
     public abstract Money getNetWorth(Money.Currency currency);
 
     public abstract AccountInfo getAccountInfo();
+
+    public int getAccountID() {
+        return id;
+    }
 
     abstract public class AccountInfo {
         protected ArrayList<Object> fields = new ArrayList<Object>();

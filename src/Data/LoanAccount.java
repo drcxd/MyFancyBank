@@ -4,7 +4,6 @@ public class LoanAccount extends MoneyAccount {
 
     protected LoanAccount(int id, Money money) {
         super(id);
-        money.amount *= -1;
         super.save(money);
     }
 

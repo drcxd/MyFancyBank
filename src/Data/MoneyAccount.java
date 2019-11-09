@@ -3,22 +3,18 @@ package Data;
 public abstract class MoneyAccount extends Account {
     protected Deposit deposit = new Deposit();
 
-    protected double interestRate;
+    protected double interestRate = 0;
 
     public static MoneyAccount createAccount(AccountType type, int id, Money money) {
         MoneyAccount account = null;
-        if (type == AccountType.Saving) {
+        if (type == AccountType.SavingAccount) {
             account = new SavingAccount(id);
-            money.sub(Bank.CREATE_ACCOUNT_FEE);
             account.save(money);
-            account.interestRate = Bank.INTEREST_RATE;
-        } else if (type == AccountType.Checking) {
+        } else if (type == AccountType.CheckingAccount) {
             account = new CheckingAccount(id);
-            money.sub(Bank.CREATE_ACCOUNT_FEE);
             account.save(money);
-        } else if (type == AccountType.Loan) {
+        } else if (type == AccountType.LoanAccount) {
             account = new LoanAccount(id, money);
-            account.interestRate = Bank.LOAN_RATE;
         }
         return account;
     }
@@ -71,6 +67,14 @@ public abstract class MoneyAccount extends Account {
 
     public void setInterestRate(double interestRate) {
         this.interestRate = interestRate;
+    }
+
+    public double getInterestRate() {
+        return interestRate;
+    }
+
+    public Money query(Money.Currency currency) {
+        return deposit.query(currency);
     }
 
     public class MoneyAccountInfo extends AccountInfo {

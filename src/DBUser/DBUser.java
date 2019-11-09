@@ -1,15 +1,15 @@
-package User;
+package DBUser;
 
-public class User {
+public class DBUser {
 
     public static class Builder {
         //private int user_id;
         private String name;
-        private int account_id;
+        private int account_id = 0;
         private int account_type;
         private int currency_type;
         private double money;
-        private int stock_id;
+        private int stock_id = -1;
         private int stock_amount;
         private double interest;
         private double purchased_price_of_stock;
@@ -59,8 +59,8 @@ public class User {
 
 
 
-        public User build() {
-            return new User(name, account_id, account_type, currency_type, money, stock_id, stock_amount,interest, purchased_price_of_stock);
+        public DBUser build() {
+            return new DBUser(name, account_id, account_type, currency_type, money, stock_id, stock_amount,interest, purchased_price_of_stock);
         }
     }
     //private int user_id;
@@ -73,7 +73,7 @@ public class User {
     private int stock_amount;
     private double interest;
     private  double purchased_price_of_stock;
-    public User (String name, int account_id, int account_type, int currency_type, double money, int stock_id, int stock_amount, double interest, double purchased_price_of_stock) {
+    public DBUser (String name, int account_id, int account_type, int currency_type, double money, int stock_id, int stock_amount, double interest, double purchased_price_of_stock) {
         //this.user_id = id;
         this.name = name;
         this.account_id = account_id;
