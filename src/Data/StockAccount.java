@@ -8,12 +8,12 @@ public class StockAccount extends Account {
 
     protected HashMap<Integer/* StockID */, UserStock> id2Stock = new HashMap<Integer, UserStock>();
 
-    public static StockAccount createAccount(AccountType type, int accountID) {
-        return new StockAccount(accountID);
+    public static StockAccount createAccount(AccountType type, int accountID, String userName) {
+        return new StockAccount(accountID, userName);
     }
 
-    protected StockAccount(int id) {
-        super(id);
+    protected StockAccount(int id, String userName) {
+        super(id, userName);
     }
 
     @Override

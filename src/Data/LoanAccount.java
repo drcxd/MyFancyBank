@@ -2,8 +2,8 @@ package Data;
 
 public class LoanAccount extends MoneyAccount {
 
-    protected LoanAccount(int id, Money money) {
-        super(id);
+    protected LoanAccount(int id, String userName, Money money) {
+        super(id, userName);
         super.save(money);
     }
 

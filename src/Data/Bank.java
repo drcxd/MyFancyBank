@@ -50,7 +50,7 @@ public class Bank {
 
     private DBManager dbManager = new DBManager();
 
-    public MoneyAccount bankerAccount = new SavingAccount(10000);
+    public MoneyAccount bankerAccount = new SavingAccount(10000, "BANKMANAGER");
 
     public Bank() {
 
@@ -131,7 +131,7 @@ public class Bank {
 
         id2MoneyAccount.put(globalAccountID, account);
         Log.globalLogCreateAccount(activeUser, globalAccountID, activeUser.getName(), type, money);
-        dbManager.createMoneyAccount(activeUser, account);
+        dbManager.createMoneyAccount(account, money.currency);
         err.msg = "Account Created!";
         return account;
     }
@@ -143,7 +143,7 @@ public class Bank {
         }
         StockAccount account = activeUser.createStockAccount(type, globalAccountID);
         id2StockAccount.put(globalAccountID, account);
-        dbManager.createStockAccount(activeUser, account);
+        dbManager.createStockAccount(account);
         err.msg = "Account Created!";
         return account;
     }
@@ -280,6 +280,7 @@ public class Bank {
         for (Entry<Integer, MoneyAccount> it : id2MoneyAccount.entrySet()) {
             if (it.getValue() instanceof LoanAccount) {
                 it.getValue().setInterestRate(interestRate);
+                dbManager.updateInterestRate(it.getValue(), interestRate);
             }
         }
     }

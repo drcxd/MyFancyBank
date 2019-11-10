@@ -1,8 +1,8 @@
 package Data;
 
 public class CheckingAccount extends MoneyAccount {
-    protected CheckingAccount(int id) {
-        super(id);
+    protected CheckingAccount(int id, String userName) {
+        super(id, userName);
     }
 
     @Override
