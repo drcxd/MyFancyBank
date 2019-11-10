@@ -19,25 +19,23 @@ public class DBManager {
         userReader.insert(u);
     }
 
-    public void createMoneyAccount(User user, MoneyAccount moneyAccount) {
-        String name = user.getName();
+    public void createMoneyAccount(MoneyAccount moneyAccount, Money.Currency currency) {
+        String name = moneyAccount.getAccountUserName();
         int id = moneyAccount.getAccountID();
         int accountType = Account.AccountType.valueOf(moneyAccount.getClass().getSimpleName()).ordinal();
-        for (Money.Currency currency : Money.Currency.values()) {
-            Money m = moneyAccount.query(currency);
-            if (m == null) {
-                continue;
-            }
-            int currencyType = m.currency.ordinal();
-            double amount = m.amount;
-            double interestRate = moneyAccount.getInterestRate();
-            DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).setCurr_type(currencyType).setMoney(amount).setInterest(interestRate).build();
-            userReader.insert(u);
+        Money m = moneyAccount.query(currency);
+        if (m == null) {
+            return;
         }
+        int currencyType = m.currency.ordinal();
+        double amount = m.amount;
+        double interestRate = moneyAccount.getInterestRate();
+        DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).setCurr_type(currencyType).setMoney(amount).setInterest(interestRate).build();
+        userReader.insert(u);
     }
 
-    public void createStockAccount(User user, StockAccount stockAccount) {
-        String name = user.getName();
+    public void createStockAccount(StockAccount stockAccount) {
+        String name = stockAccount.getAccountUserName();
         int id = stockAccount.getAccountID();
         int accountType = Account.AccountType.valueOf(stockAccount.getClass().getSimpleName()).ordinal();
         DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).build();
@@ -50,9 +48,17 @@ public class DBManager {
 
     public void updateMoneyAccount(MoneyAccount account, Money.Currency currency) {
         Money m = account.query(currency);
-        userReader.update_account(account.getAccountID(),
-                                  m.currency.ordinal(),
-                                  m.amount);
+        if (m == null) {
+            return;
+        }
+        String name = account.getAccountUserName();
+        int id = account.getAccountID();
+        int accountType = Account.AccountType.valueOf(account.getClass().getSimpleName()).ordinal();
+        int currencyType = m.currency.ordinal();
+        double amount = m.amount;
+        double interestRate = account.getInterestRate();
+        DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).setCurr_type(currencyType).setMoney(amount).setInterest(interestRate).build();
+        userReader.insert(u);
     }
 
     public void createStock(Stock stock) {
@@ -69,10 +75,15 @@ public class DBManager {
         if (userStock == null) {
             return;
         }
-        userReader.update_stock(account.getAccountID(),
-                                 stockID,
-                                 userStock.number,
-                                 userStock.price.amount);
+        String name = account.getAccountUserName();
+        int id = account.getAccountID();
+        int accountType = Account.AccountType.valueOf(account.getClass().getSimpleName()).ordinal();
+        DBUser u = new DBUser.Builder().setName(name).setAcc_id(id).setAcc_type(accountType).setStock_id(stockID).setStock_amount(userStock.number).setPurchased_price_of_stock(userStock.price.amount).build();
+        userReader.insert(u);
+    }
+
+    public void updateInterestRate(MoneyAccount account, double interestRate) {
+        userReader.update_interest_rate(account.getAccountID(), interestRate);
     }
 
     public void loadAllStock(HashMap<Integer, Stock> id2Stock) {

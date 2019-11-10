@@ -14,8 +14,11 @@ abstract public class Account {
 
     protected final int id;
 
-    public Account(int id) {
+    protected String userName;
+
+    public Account(int id, String userName) {
         this.id = id;
+        this.userName = userName;
     }
 
     public abstract boolean destroy(Msg err);
@@ -26,6 +29,10 @@ abstract public class Account {
 
     public int getAccountID() {
         return id;
+    }
+
+    public String getAccountUserName() {
+        return userName;
     }
 
     abstract public class AccountInfo {

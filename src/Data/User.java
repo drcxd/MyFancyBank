@@ -16,13 +16,13 @@ public class User {
     public String getName() { return name; }
 
     public MoneyAccount createMoneyAccount(Account.AccountType type, Money initialDeposit, int accountID) {
-        MoneyAccount account = MoneyAccount.createAccount(type, accountID, initialDeposit);
+        MoneyAccount account = MoneyAccount.createAccount(type, accountID, name, initialDeposit);
         accounts.put(Integer.valueOf(accountID), account);
         return account;
     }
 
     public StockAccount createStockAccount(Account.AccountType type, int accountID) {
-        StockAccount account = StockAccount.createAccount(type, accountID);
+        StockAccount account = StockAccount.createAccount(type, accountID, name);
         accounts.put(Integer.valueOf(accountID), account);
         return account;
     }

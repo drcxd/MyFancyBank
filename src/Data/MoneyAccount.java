@@ -5,22 +5,22 @@ public abstract class MoneyAccount extends Account {
 
     protected double interestRate = 0;
 
-    public static MoneyAccount createAccount(AccountType type, int id, Money money) {
+    public static MoneyAccount createAccount(AccountType type, int id, String userName, Money money) {
         MoneyAccount account = null;
         if (type == AccountType.SavingAccount) {
-            account = new SavingAccount(id);
+            account = new SavingAccount(id, userName);
             account.save(money);
         } else if (type == AccountType.CheckingAccount) {
-            account = new CheckingAccount(id);
+            account = new CheckingAccount(id, userName);
             account.save(money);
         } else if (type == AccountType.LoanAccount) {
-            account = new LoanAccount(id, money);
+            account = new LoanAccount(id, userName, money);
         }
         return account;
     }
 
-    protected MoneyAccount(int id) {
-        super(id);
+    protected MoneyAccount(int id, String userName) {
+        super(id, userName);
     }
 
     @Override
