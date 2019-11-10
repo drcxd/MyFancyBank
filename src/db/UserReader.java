@@ -24,6 +24,7 @@ public class UserReader extends BaseDBReader {
                          "account_id = VALUES(account_id)," +
                          "account_type = VALUES(account_type)," +
                          "currency_type = VALUES(currency_type)," +
+                         "money = VALUES(money)," +
                          "stock_id = VALUES(stock_id)," +
                          "stock_amount = VALUES(stock_amount)," +
                          "interest_rate = VALUES(interest_rate)," +
