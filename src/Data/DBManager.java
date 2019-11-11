@@ -8,11 +8,14 @@ import db.UserReader;
 import DBUser.DBUser;
 import db.StockReader;
 import DBStock.DBStock;
+import db.LogReader;
 
 public class DBManager {
     private UserReader userReader = new UserReader();
 
     private StockReader stockReader = new StockReader();
+
+    private static LogReader logReader = new LogReader();
 
     public void createUser(User user) {
         DBUser u = new DBUser.Builder().setName(user.getName()).build();
@@ -99,6 +102,7 @@ public class DBManager {
                             HashMap<Integer, Account> id2Account,
                             HashMap<Integer, MoneyAccount> id2MoneyAccount,
                             HashMap<Integer, StockAccount> id2StockAccount) {
+        Log.loadGlobalLog(logReader.getLog_by_Name(Log.getGlobalLogName()));
         int maxAccountID = 10000;
         // read all user name
         ArrayList<String> userNames = userReader.getAllUser();
@@ -106,6 +110,7 @@ public class DBManager {
             User user = new User(name);
             name2User.put(name, user);
             Log.createUserLog(user);
+            Log.loadUserLog(user, logReader.getLog_by_Name(user.getName()));
 
             // read all user accounts
             ArrayList<Integer> allAccountID = userReader.getAccountId(name);
@@ -147,5 +152,9 @@ public class DBManager {
             }
         }
         return maxAccountID;
+    }
+
+    public static void saveLog(String userName, String log) {
+        logReader.insert(userName, log);
     }
 }
