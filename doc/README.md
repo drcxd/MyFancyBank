@@ -14,6 +14,16 @@ back end.
 
 You need to put the source code in an Eclipse Java Project then run
 the main function in `Bank.java`. To start the program, run the main function in `Bank.java`
+To connect to the databse : 
+1. download sql jdbc at : http://dev.mysql.com/downloads/connector/j/ , in IntelliJ, add the jdbc from 
+file -> project structure -> Libraries -> + 
+2. Intall MAMP at http://www.mamp.info/en/downloads/ (do not use pro)
+3. Open preferences, configure Apache Port to be 8888 and MySQL Port to 8889 
+4. Then click Open Web Start Page button, a start web page will be opened where you can interact with
+MySQL in a web UI instead of terminal. When it opens, choose Tools->phpMyAdmin.
+5. Under phpMyAdmin, you should be able to see a list of databases. Create a new database called
+591database (or whatever name you pref). And use utf8_general_ci as the collation.
+6. In `MySQLDBUtil` change the `DB_NAME` to match the database name created in above step and change`PORT_NUM` to 8889
 
 # Clairification
 
