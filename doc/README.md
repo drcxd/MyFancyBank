@@ -196,3 +196,19 @@ could done.
 This is the initial panel of the application. In this panel, the user
 of the program could choose to login as an user of the bank or the
 bank manager.
+
+# Data Base Classes 
+## BaseDBReader 
+This is the base class for a data base reader. It initialize a connection with the local database. Right now it has 4 child classes `InfoReader`,`LogReader`,`StockReader`,`UserReader`.
+### InfoReader 
+Extracts global information about the banking system including interest rate openning_account fee etc.
+### LogReader 
+Writes and extracts user and global logs 
+### UserReader 
+Writes, modifies or retrieves account information for a user 
+### StockReader 
+Writes, modifies or retrieves stock information 
+## MySQLDBUtil 
+Saves login information for the database 
+## MySQLTableCreation 
+Creates empty data schemas. Right now we have 4 tables. User table stores all account information associated with each account id. Logs table stores user logs and global logs. Stocks save stock id and its price. Info table stores global information for the bank. 
