@@ -13,7 +13,8 @@ back end.
 # Compile and Run
 
 You need to put the source code in an Eclipse Java Project then run
-the main function in `Bank.java`. To start the program, run the main function in `Bank.java`
+the main function in `Bank.java`. To start the program, run the main function in `Bank.java` 
+
 To connect to the databse : 
 1. download sql jdbc at : http://dev.mysql.com/downloads/connector/j/ , in IntelliJ, add the jdbc from 
 file -> project structure -> Libraries -> + 
